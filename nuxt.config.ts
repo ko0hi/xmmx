@@ -5,4 +5,7 @@ export default defineNuxtConfig({
     configPath: 'tailwind.config',
   },
   ssr: false,
+  imports: {
+    autoImport: false,
+  },
 })
