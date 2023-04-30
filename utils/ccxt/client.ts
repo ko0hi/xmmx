@@ -19,7 +19,7 @@ import type {
 class Client {
   protected exchange: Exchange
 
-  constructor(ExchangeClass: any, options: ExchangeOptions) {
+  constructor(ExchangeClass: new (options: ExchangeOptions) => Exchange, options: ExchangeOptions) {
     this.exchange = new ExchangeClass(options)
   }
 
