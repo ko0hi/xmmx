@@ -26,6 +26,5 @@ jobs:
 
       - name: Lint and Format
         run: yarn lint && yarn format
-
 #      - name: Build and Deploy
 #        run: npm run build && npm run deploy
