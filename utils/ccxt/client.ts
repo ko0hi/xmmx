@@ -1,4 +1,13 @@
-import { type Exchange, type Market, type OrderBook, type OHLCV, type Balances, type Order, type Trade } from 'ccxt'
+import {
+  type Exchange,
+  type Market,
+  type OrderBook,
+  type OHLCV,
+  type Balances,
+  type Order,
+  type Trade,
+  type Ticker,
+} from 'ccxt'
 import type {
   FetchTickerParams,
   FetchOrderbookParams,
@@ -14,12 +23,15 @@ import type {
   CancelOrdersParams,
   CancelAllOrdersParams,
   ExchangeOptions,
+  WatchTickerParams,
+  WatchOrderbookParams,
+  WatchTradesParams,
 } from './types'
 
 class Client {
   protected exchange: Exchange
 
-  constructor(ExchangeClass: any, options: ExchangeOptions) {
+  constructor(ExchangeClass: new (options: ExchangeOptions) => E, options: ExchangeOptions) {
     this.exchange = new ExchangeClass(options)
   }
 
@@ -98,6 +110,28 @@ class Client {
     const { symbol, since, limit, params: extraParams } = params
     return await this.exchange.fetchMyTrades(symbol, since, limit, extraParams)
   }
+
+  watchTicker = async (params: WatchTickerParams): Promise<void> => {
+    await this.exchange.watchOrderBook(params.symbol)
+  }
+
+  watchOrderbook = async (params: WatchOrderbookParams): Promise<void> => {
+    await this.exchange.watchOrderBook(params.symbol, params.limit)
+  }
+
+  watchTrades = async (params: WatchTradesParams): Promise<void> => {
+    await this.exchange.watchTrades(params.symbol)
+  }
+
+  // @ts-expect-error('no type in ccxt')
+  sleep = async (interval: number): Promise<void> => this.exchange.sleep(interval)
+
+  // @ts-expect-error('no type in ccxt')
+  getTickerFromSocket = (symbol: string): Ticker => this.exchange.tickers[symbol]
+  // @ts-expect-error('no type in ccxt')
+  getOrderbookFromSocket = (symbol: string): Orderbook => this.exchange.orderbooks[symbol]
+
+  getTradesFromSocket = (symbol: string): Trade => this.exchange.trades[symbol]
 
   getExchange = (): Exchange => this.exchange
 }
