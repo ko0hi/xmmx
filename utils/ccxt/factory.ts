@@ -1,11 +1,11 @@
 import type { ExchangeOptions } from './types'
-import BinanceusdmClient from './binanceusdmClient'
+import Binanceusdm from './binanceusdm'
 import type Client from './client'
 
 export const createClient = (exchangeId: string, options: ExchangeOptions = {}): Client => {
   switch (exchangeId) {
     case 'binanceusdm':
-      return new BinanceusdmClient(options)
+      return new Binanceusdm(options)
     default:
       throw new Error(`Exchange ${exchangeId} is not supported`)
   }
