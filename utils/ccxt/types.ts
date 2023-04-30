@@ -81,6 +81,19 @@ export interface CancelAllOrdersParams {
   params?: any
 }
 
+export interface WatchTickerParams {
+  symbol: string
+}
+
+export interface WatchOrderbookParams {
+  symbol: string
+  limit?: number
+}
+
+export interface WatchTradesParams {
+  symbol: string
+}
+
 export interface ExchangeOptions {
   enableRateLimit?: boolean
   rateLimit?: number
