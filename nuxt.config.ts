@@ -4,4 +4,5 @@ export default defineNuxtConfig({
   tailwindcss: {
     configPath: 'tailwind.config',
   },
+  ssr: false,
 })
