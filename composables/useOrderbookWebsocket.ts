@@ -10,9 +10,10 @@ const useOrderbookWebsocket = (options: {
   limit?: number
   round?: number
   exchangeOptions?: any
-}): { orderbook: Ref<OrderBook> } => {
+}): { orderbook: Ref<OrderBook>; pending: Ref<boolean> } => {
   const client = ref<Client>(createClient(options.exchangeId, options.exchangeOptions))
   const orderbook = ref<OrderBook & { symbol: string }>(null)
+  const pending = ref(true)
   // @ts-expect-error('nodejs')
   const timer = ref<Timer>(null)
 
@@ -31,7 +32,9 @@ const useOrderbookWebsocket = (options: {
   const watchOrderbook = async (): Promise<void> => {
     const { symbol, interval } = { ...defaults, ...options }
     await client.value.watchOrderbook({ symbol })
-    console.log('Watched')
+    updateOrderbook(client.value.getOrderbookFromSocket(symbol))
+    pending.value = false
+
     timer.value = setInterval(() => {
       updateOrderbook(client.value.getOrderbookFromSocket(symbol))
     }, interval)
@@ -75,7 +78,7 @@ const useOrderbookWebsocket = (options: {
     clearInterval(timer.value)
   }
 
-  return { orderbook }
+  return { orderbook, pending }
 }
 
 export default useOrderbookWebsocket
