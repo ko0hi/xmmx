@@ -21,13 +21,13 @@ const props = withDefaults(
 )
 
 const { orderbook, pending } = useOrderbookWebsocket(
-  props.exchangeId,
+  computed(() => props.exchangeId),
   computed(() => props.symbol),
-  props.interval,
+  computed(() => props.interval),
   {
-    limit: props.limit,
-    round: props.round,
-    exchangeOptions: props.exchangeOptions,
+    limit: computed(() => props.limit),
+    round: computed(() => props.round),
+    exchangeOptions: computed(() => props.exchangeOptions),
   }
 )
 const { formatPrice, formatSize } = usePrecisionFormatter(props.exchangeId, props.exchangeOptions)
@@ -61,7 +61,9 @@ const getIthRowItem = (i: number): [Item, Item, Item, Item] => {
   ]
 }
 
-const displayItems = computed(() => flatten([...new Array(props.limit).keys()].map(getIthRowItem)))
+const displayItems = computed(() =>
+  flatten([...new Array(Math.min(props.limit, orderbook.value.asks.length)).keys()].map(getIthRowItem))
+)
 </script>
 
 <template>
