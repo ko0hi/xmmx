@@ -12,7 +12,7 @@ type OrderbookProps = {
   exchangeOptions?: object
   clicked?: Ref<object> | null
 }
-type Item = { i: number; side: 'ask' | 'bid'; price: string; size: string }
+type Item = { i: number; side: 'ask' | 'bid'; price: string; size: string; sizeDisplay: string }
 
 const props = withDefaults(defineProps<OrderbookProps>(), {
   limit: 5,
@@ -43,6 +43,7 @@ const getIthRowItem = (i: number, side: 'ask' | 'bid'): Item => {
     side: side,
     price: formatPrice(props.symbol, target[0]),
     size: formatSize(props.symbol, target[1]),
+    sizeDisplay: formatSize(props.symbol, target[1], true),
   }
 }
 
@@ -88,8 +89,8 @@ const emit = defineEmits<{
         class="grid grid-cols-2 hover hover:bg-gray-100 cursor-pointer"
         @click="onClick(item)"
       >
-        <span :class="sideToSpanClass(item.side)">{{ item.side === 'bid' ? item.size : item.price }}</span>
-        <span :class="sideToSpanClass(item.side)">{{ item.side == 'bid' ? item.price : item.size }}</span>
+        <span :class="sideToSpanClass(item.side)">{{ item.side === 'bid' ? item.sizeDisplay : item.price }}</span>
+        <span :class="sideToSpanClass(item.side)">{{ item.side == 'bid' ? item.price : item.sizeDisplay }}</span>
       </div>
     </div>
     <div v-else>

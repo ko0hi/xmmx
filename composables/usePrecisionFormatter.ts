@@ -26,7 +26,8 @@ const usePrecisionFormatter = (
     }
   }
   const formatPrice = (symbol: string, value: number): string => formatValue(value, getPricePrecision(symbol))
-  const formatSize = (symbol: string, value: number): string => formatValue(value, getSizePrecision(symbol), true)
+  const formatSize = (symbol: string, value: number, withShortForm: boolean = false): string =>
+    formatValue(value, getSizePrecision(symbol), withShortForm)
 
   return { getPricePrecision, getSizePrecision, formatPrice, formatSize }
 }
