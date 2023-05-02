@@ -25,8 +25,15 @@ const limit = ref(props.limit)
 const round = ref(props.round)
 const exchangeOptions = ref(props.exchangeOptions)
 
-const { listAvailableMarkets } = useCcxtClient(exchangeId, exchangeOptions)
+const { listAvailableMarkets, getTickSize } = useCcxtClient(exchangeId, exchangeOptions)
 const options = computed(() => listAvailableMarkets().map(item => ({ label: item, value: item })))
+const tickSize = computed(() => {
+  try {
+    return getTickSize(symbol.value)
+  } catch (MarketNotFoundError) {
+    return null
+  }
+})
 const clicked = ref()
 watch(exchangeId, () => (symbol.value = listAvailableMarkets()[0]))
 
@@ -37,6 +44,8 @@ const emit = defineEmits<{
 watch([clicked], () => {
   emit('update:modelValue', clicked.value)
 })
+
+watch([exchangeId, symbol], () => (round.value = tickSize.value), { immediate: true })
 
 const labelStyle: CSSProperties = computed(() => ({
   fontSize: '10px',
@@ -74,7 +83,14 @@ const labelStyle: CSSProperties = computed(() => ({
         </n-radio-group>
       </n-form-item>
       <n-form-item class="my-2" label="Round" :label-style="labelStyle">
-        <n-input-number v-model:value="round" :min="0" clearable />
+        <n-radio-group v-model:value="round">
+          <n-radio
+            v-for="item in [1, 10, 100, 1000]"
+            :key="item"
+            :value="tickSize * item"
+            :label="(tickSize * item).toString()"
+          />
+        </n-radio-group>
       </n-form-item>
       <n-form-item class="my-2" label="Interval" :label-style="labelStyle">
         <n-radio-group v-model:value="interval">

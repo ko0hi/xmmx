@@ -12,13 +12,14 @@ const useCcxtClient = (
   exchangeIdRef: Readonly<Ref<string>>
   exchangeOptionsRef: Readonly<Ref<object>>
   client: ComputedRef<CcxtClient>
-  findMarket: (symbol: string) => Market
+  findMarket: (symbol: string) => Market | null
   listAvailableMarkets: () => string[]
+  getTickSize: (symbol: string) => number | null
 } => {
   const exchangeIdRef = castToRef(exchangeId)
   const exchangeOptionsRef = castToRef(exchangeOptions)
 
-  const { initMarket, findMarket, listAvailableMarkets } = useMarkets()
+  const { initMarket, findMarket, listAvailableMarkets, getTickSize } = useMarkets()
 
   const client = computed(() => createClient(exchangeIdRef.value, exchangeOptionsRef.value))
 
@@ -26,6 +27,7 @@ const useCcxtClient = (
     await initMarket(exchangeIdRef.value, exchangeOptionsRef.value)
   })
 
+  // exchangeが変更されるたびに参照market情報を追加する。
   watch(
     [exchangeIdRef, exchangeOptionsRef],
     async () => {
@@ -40,6 +42,7 @@ const useCcxtClient = (
     client,
     findMarket: (symbol: string) => findMarket(exchangeIdRef.value, symbol),
     listAvailableMarkets: () => listAvailableMarkets(exchangeIdRef.value),
+    getTickSize: (symbol: string) => getTickSize(exchangeIdRef.value, symbol),
   }
 }
 
