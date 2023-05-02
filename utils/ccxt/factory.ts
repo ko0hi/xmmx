@@ -1,12 +1,16 @@
 import type { ExchangeOptions } from './types'
+import type CcxtClient from './ccxtClient'
 import Binanceusdm from './binanceusdm'
-import type Client from './client'
+import Binancecoinm from './binancecoinm'
+import { UnsupportedExchangeError } from '../exceptions'
 
-export const createClient = (exchangeId: string, options: ExchangeOptions = {}): Client => {
+export const createClient = (exchangeId: string, options: ExchangeOptions = {}): CcxtClient => {
   switch (exchangeId) {
     case 'binanceusdm':
       return new Binanceusdm(options)
+    case 'binancecoinm':
+      return new Binancecoinm(options)
     default:
-      throw new Error(`Exchange ${exchangeId} is not supported`)
+      throw new UnsupportedExchangeError(`Exchange ${exchangeId} is not supported`)
   }
 }
