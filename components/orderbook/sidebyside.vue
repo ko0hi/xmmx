@@ -59,7 +59,7 @@ const onClick = (item: Item) => {
 
 const displayItems = computed<Item[]>(() => {
   const rtn = []
-  for (let i = 0; i < Math.min(orderbook.value.asks.length, props.limit); ++i) {
+  for (let i = 0; i < Math.min(orderbook.value.asks.length, orderbook.value.bids.length, props.limit); ++i) {
     for (const side of ['bid', 'ask']) {
       rtn.push(getIthRowItem(i, side))
     }
