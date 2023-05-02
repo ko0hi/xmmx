@@ -23,10 +23,6 @@ const useCcxtClient = (
 
   const client = computed(() => createClient(exchangeIdRef.value, exchangeOptionsRef.value))
 
-  onMounted(async () => {
-    await initMarket(exchangeIdRef.value, exchangeOptionsRef.value)
-  })
-
   // exchangeが変更されるたびに参照market情報を追加する。
   watch(
     [exchangeIdRef, exchangeOptionsRef],
