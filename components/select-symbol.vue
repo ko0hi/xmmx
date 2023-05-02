@@ -18,8 +18,10 @@ const selected = computed({
 })
 onMounted(async () => {
   await initMarket(props.exchangeId, props.exchangeOptions)
-  availableSymbols.value = getAvailableSymbols(props.exchangeId)
+  availableSymbols.value = listAvailableMarkets(props.exchangeId)
 })
+
+const options = computed(() => availableSymbols.value.map(item => ({ label: item, value: item })))
 </script>
 
 <template>
