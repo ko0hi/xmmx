@@ -20,7 +20,16 @@ const props = withDefaults(
   }
 )
 
-const { orderbook, pending } = useOrderbookWebsocket(props)
+const { orderbook, pending } = useOrderbookWebsocket(
+  props.exchangeId,
+  computed(() => props.symbol),
+  props.interval,
+  {
+    limit: props.limit,
+    round: props.round,
+    exchangeOptions: props.exchangeOptions,
+  }
+)
 const { formatPrice, formatSize } = usePrecisionFormatter(props.exchangeId, props.exchangeOptions)
 
 type Item = { value: string; side: 'ask' | 'bid'; kind: 'size' | 'price' }
@@ -56,19 +65,24 @@ const displayItems = computed(() => flatten([...new Array(props.limit).keys()].m
 </script>
 
 <template>
-  <div v-if="!pending" class="grid grid-cols-4 font-mono text-right">
-    <span>Size</span>
-    <span>Bid</span>
-    <span>Ask</span>
-    <span>Size</span>
-    <span
-      v-for="item in displayItems"
-      :key="item"
-      class="hover hover:bg-gray-100 cursor-pointer"
-      :class="item.side == 'ask' ? 'text-red-500' : 'text-green-500'"
-    >
-      {{ item.value }}
-    </span>
+  <div class="flex justify-center items-center min-h-[6rem]">
+    <div v-if="!pending" class="grid grid-cols-4 gap-x-4 font-mono text-right">
+      <span>Size</span>
+      <span>Bid</span>
+      <span>Ask</span>
+      <span>Size</span>
+      <span
+        v-for="item in displayItems"
+        :key="item"
+        class="hover hover:bg-gray-100 cursor-pointer"
+        :class="item.side == 'ask' ? 'text-red-500' : 'text-green-500'"
+      >
+        {{ item.value }}
+      </span>
+    </div>
+    <div v-else>
+      <progress class="progress progress-primary w-56"></progress>
+    </div>
   </div>
 </template>
 
