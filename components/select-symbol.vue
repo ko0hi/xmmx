@@ -2,7 +2,7 @@
 import useMarkets from '~/composables/useMarkets'
 import { computed, onMounted, Ref, ref } from 'vue'
 
-const { initMarket, getAvailableSymbols } = useMarkets()
+const { initMarket, listAvailableMarkets } = useMarkets()
 
 const props = defineProps<{ modelValue: Ref; exchangeId: string; exchangeOptions?: object }>()
 
@@ -18,14 +18,14 @@ const selected = computed({
 })
 onMounted(async () => {
   await initMarket(props.exchangeId, props.exchangeOptions)
-  availableSymbols.value = getAvailableSymbols(props.exchangeId)
+  availableSymbols.value = listAvailableMarkets(props.exchangeId)
 })
+
+const options = computed(() => availableSymbols.value.map(item => ({ label: item, value: item })))
 </script>
 
 <template>
   <div v-if="availableSymbols">
-    <el-select v-model="selected" filterable>
-      <el-option v-for="item in availableSymbols" :key="item" :label="item" :value="item">{{ item }}</el-option>
-    </el-select>
+    <n-select v-model="selected" :options="options" filterable> </n-select>
   </div>
 </template>

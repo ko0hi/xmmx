@@ -1,8 +1,8 @@
-import { onMounted } from 'vue'
-import useMarkets from '~/composables/useMarkets'
+import { ComputedRef } from 'vue'
+import useCcxtClient from '~/composables/useCcxtClient'
 
 const usePrecisionFormatter = (
-  exchangeId: string,
+  exchangeId: string | ComputedRef<string>,
   exchangeOptions: object = {}
 ): {
   getPricePrecision: (symbol: string) => number | null
@@ -10,14 +10,10 @@ const usePrecisionFormatter = (
   getSizePrecision: (symbol: string) => number | null
   formatPrice: (symbol: string, value: number) => string
 } => {
-  const { initMarket, findMarket } = useMarkets()
+  const { findMarket } = useCcxtClient(exchangeId, exchangeOptions)
 
-  onMounted(async () => {
-    await initMarket(exchangeId, exchangeOptions)
-  })
-
-  const getPricePrecision = (symbol: string): number | null => findMarket(exchangeId, symbol).precision.price ?? null
-  const getSizePrecision = (symbol: string): number | null => findMarket(exchangeId, symbol).precision.amount ?? null
+  const getPricePrecision = (symbol: string): number | null => findMarket(symbol).precision.price ?? null
+  const getSizePrecision = (symbol: string): number | null => findMarket(symbol).precision.amount ?? null
   const formatValue = (value: number, precision: number | null, withShortForm: boolean = false): string => {
     if (precision === null) {
       return value.toString()
@@ -30,7 +26,8 @@ const usePrecisionFormatter = (
     }
   }
   const formatPrice = (symbol: string, value: number): string => formatValue(value, getPricePrecision(symbol))
-  const formatSize = (symbol: string, value: number): string => formatValue(value, getSizePrecision(symbol), true)
+  const formatSize = (symbol: string, value: number, withShortForm: boolean = false): string =>
+    formatValue(value, getSizePrecision(symbol), withShortForm)
 
   return { getPricePrecision, getSizePrecision, formatPrice, formatSize }
 }

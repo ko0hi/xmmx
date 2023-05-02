@@ -28,7 +28,7 @@ import type {
   WatchTradesParams,
 } from './types'
 
-class Client {
+class CcxtClient {
   protected exchange: Exchange
 
   constructor(ExchangeClass: new (options: ExchangeOptions) => Exchange, options: ExchangeOptions) {
@@ -135,4 +135,4 @@ class Client {
   getExchange = (): Exchange => this.exchange
 }
 
-export default Client
+export default CcxtClient
