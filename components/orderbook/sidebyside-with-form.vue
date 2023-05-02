@@ -3,16 +3,18 @@ import { computed, CSSProperties, ref } from 'vue'
 import useCcxtClient from '~/composables/useCcxtClient'
 
 type OrderbookProps = {
-  modelValue: { exchangeId: string; exchangeOptions: object; symbol: string }
-  exchangeId: string
-  symbol: string
-  interval: number
+  exchangeId?: string
+  symbol?: string
+  interval?: number
   limit?: number
   round?: number
   exchangeOptions?: object
 }
 
 const props = withDefaults(defineProps<OrderbookProps>(), {
+  exchangeId: 'binanceusdm',
+  symbol: 'BTC/USDT:USDT',
+  interval: 1000,
   limit: 5,
   round: null,
   exchangeOptions: () => {},
@@ -24,8 +26,10 @@ const interval = ref(props.interval)
 const limit = ref(props.limit)
 const round = ref(props.round)
 const exchangeOptions = ref(props.exchangeOptions)
+const clicked = ref()
 
 const { listAvailableMarkets, getTickSize } = useCcxtClient(exchangeId, exchangeOptions)
+
 const options = computed(() => listAvailableMarkets().map(item => ({ label: item, value: item })))
 const tickSize = computed(() => {
   try {
@@ -34,18 +38,14 @@ const tickSize = computed(() => {
     return null
   }
 })
-const clicked = ref()
-watch(exchangeId, () => (symbol.value = listAvailableMarkets()[0]))
 
 const emit = defineEmits<{
   (event: 'update:modelValue', value: { exchangeId: string; exchangeOptions: object; symbol: string }): void
 }>()
 
-watch([clicked], () => {
-  emit('update:modelValue', clicked.value)
-})
-
-watch([exchangeId, symbol], () => (round.value = tickSize.value), { immediate: true })
+watch(exchangeId, () => (symbol.value = listAvailableMarkets()[0]))
+watch([clicked], () => emit('update:modelValue', clicked.value))
+watch([exchangeId, symbol, tickSize], () => (round.value = tickSize.value), { immediate: true })
 
 const labelStyle: CSSProperties = computed(() => ({
   fontSize: '10px',
