@@ -125,7 +125,6 @@ class Client {
 
   // @ts-expect-error('no type in ccxt')
   sleep = async (interval: number): Promise<void> => this.exchange.sleep(interval)
-
   // @ts-expect-error('no type in ccxt')
   getTickerFromSocket = (symbol: string): Ticker => this.exchange.tickers[symbol]
   // @ts-expect-error('no type in ccxt')

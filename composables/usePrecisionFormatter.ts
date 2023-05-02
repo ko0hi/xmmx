@@ -5,9 +5,9 @@ const usePrecisionFormatter = (
   exchangeId: string,
   exchangeOptions: object = {}
 ): {
-  getPricePrecision: (symbol: string) => number
+  getPricePrecision: (symbol: string) => number | null
   formatSize: (symbol: string, value: number) => string
-  getSizePrecision: (symbol: string) => number
+  getSizePrecision: (symbol: string) => number | null
   formatPrice: (symbol: string, value: number) => string
 } => {
   const { initMarket, findMarket } = useMarkets()
@@ -16,11 +16,12 @@ const usePrecisionFormatter = (
     await initMarket(exchangeId, exchangeOptions)
   })
 
-  const getPricePrecision = (symbol: string): number => findMarket(exchangeId, symbol).precision.price
-  const getSizePrecision = (symbol: string): number => findMarket(exchangeId, symbol).precision.amount
-
-  const formatValue = (value: number, precision: number, withShortForm: boolean = false): string => {
-    if (value < 1000 || !withShortForm) {
+  const getPricePrecision = (symbol: string): number | null => findMarket(exchangeId, symbol).precision.price ?? null
+  const getSizePrecision = (symbol: string): number | null => findMarket(exchangeId, symbol).precision.amount ?? null
+  const formatValue = (value: number, precision: number | null, withShortForm: boolean = false): string => {
+    if (precision === null) {
+      return value.toString()
+    } else if (value < 1000 || !withShortForm) {
       return value.toFixed(precision)
     } else if (value >= 1000000) {
       return (value / 1000000).toFixed(precision) + 'M'
