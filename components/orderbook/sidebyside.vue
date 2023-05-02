@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import useOrderbookWebsocket from '~/composables/useOrderbookWebsocket'
 import { computed, Ref } from 'vue'
-import flatten from 'lodash/flatten'
 import usePrecisionFormatter from '~/composables/usePrecisionFormatter'
 
 type OrderbookProps = {
@@ -13,6 +12,7 @@ type OrderbookProps = {
   exchangeOptions?: object
   clicked?: Ref<object> | null
 }
+type Item = { i: number; side: 'ask' | 'bid'; price: string; size: string }
 
 const props = withDefaults(defineProps<OrderbookProps>(), {
   limit: 5,
@@ -36,43 +36,17 @@ const { formatPrice, formatSize } = usePrecisionFormatter(
   computed(() => props.exchangeOptions)
 )
 
-type Item = { value: string; side: 'ask' | 'bid'; kind: 'size' | 'price' }
-
-const getIthRowItem = (i: number): [Item, Item, Item, Item] => {
-  const ask = orderbook.value.asks[i]
-  const bid = orderbook.value.bids[i]
-  return [
-    {
-      value: formatSize(props.symbol, bid[1]),
-      side: 'bid',
-      kind: 'size',
-    },
-    {
-      value: formatPrice(props.symbol, bid[0]),
-      side: 'bid',
-      kind: 'price',
-    },
-    {
-      value: formatPrice(props.symbol, ask[0]),
-      side: 'ask',
-      kind: 'price',
-    },
-    {
-      value: formatSize(props.symbol, ask[1]),
-      side: 'ask',
-      kind: 'size',
-    },
-  ]
+const getIthRowItem = (i: number, side: 'ask' | 'bid'): Item => {
+  const target = side === 'ask' ? orderbook.value.asks[i] : orderbook.value.bids[i]
+  return {
+    i: i,
+    side: side,
+    price: formatPrice(props.symbol, target[0]),
+    size: formatSize(props.symbol, target[1]),
+  }
 }
 
-const displayItems = computed(() =>
-  flatten([...new Array(Math.min(props.limit, orderbook.value.asks.length)).keys()].map(getIthRowItem))
-)
-
-const emit = defineEmits<{
-  (event: 'update:clicked', value: { exchangeId: string; exchangeOptions: object; symbol: string }): void
-}>()
-
+const sideToSpanClass = (side: 'ask' | 'bid') => (side === 'ask' ? 'text-red-500' : 'text-green-500')
 const onClick = (item: Item) => {
   emit('update:clicked', {
     exchangeId: props.exchangeId,
@@ -80,31 +54,46 @@ const onClick = (item: Item) => {
     symbol: props.symbol,
     ...item,
   })
-  console.log('Clicked', item, props.clicked)
 }
+
+const displayItems = computed<Item[]>(() => {
+  const rtn = []
+  for (let i = 0; i < Math.min(orderbook.value.asks.length, props.limit); ++i) {
+    for (const side of ['bid', 'ask']) {
+      rtn.push(getIthRowItem(i, side))
+    }
+  }
+  return rtn
+})
+
+const emit = defineEmits<{
+  (event: 'update:clicked', value: { exchangeId: string; exchangeOptions: object; symbol: string }): void
+}>()
 </script>
 
 <template>
   <div class="flex justify-center items-center min-h-[6rem]">
-    <div v-if="!pending" class="grid grid-cols-4 gap-x-2 font-mono text-right w-full">
-      <span>Size</span>
-      <span>Bid</span>
-      <span>Ask</span>
-      <span>Size</span>
-      <span
+    <div v-if="!pending" class="grid grid-cols-2 gap-x-2 font-mono text-right w-full">
+      <div class="grid grid-cols-2">
+        <span>Size</span>
+        <span>Bid</span>
+      </div>
+      <div class="grid grid-cols-2">
+        <span>Ask</span>
+        <span>Size</span>
+      </div>
+      <div
         v-for="item in displayItems"
         :key="item"
-        class="hover hover:bg-gray-100 cursor-pointer"
-        :class="item.side == 'ask' ? 'text-red-500' : 'text-green-500'"
+        class="grid grid-cols-2 hover hover:bg-gray-100 cursor-pointer"
         @click="onClick(item)"
       >
-        {{ item.value }}
-      </span>
+        <span :class="sideToSpanClass(item.side)">{{ item.side === 'bid' ? item.size : item.price }}</span>
+        <span :class="sideToSpanClass(item.side)">{{ item.side == 'bid' ? item.price : item.size }}</span>
+      </div>
     </div>
     <div v-else>
       <progress class="progress progress-primary w-56"></progress>
     </div>
   </div>
 </template>
-
-<style scoped></style>
