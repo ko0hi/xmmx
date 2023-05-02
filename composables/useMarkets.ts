@@ -4,6 +4,7 @@ import createClient from '~/utils/ccxt'
 
 const useMarkets = (): {
   findMarket: (exchangeId: string, symbol: string) => Market
+  getAvailableSymbols: (exchangeId: string) => string[]
   initMarket: (exchangeId: string, exchangeOptions?: object) => Promise<Market[]>
 } => {
   const { getMarkets, updateMarkets } = useStore()
@@ -25,9 +26,12 @@ const useMarkets = (): {
     return mkt
   }
 
+  const getAvailableSymbols = (exchangeId: string): string[] => getMarkets(exchangeId).map(m => m.symbol)
+
   return {
     findMarket,
     initMarket,
+    getAvailableSymbols,
   }
 }
 

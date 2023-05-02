@@ -1,27 +1,50 @@
 import { onMounted, onUnmounted, type Ref, ref } from 'vue'
-import type Client from '../utils/ccxt/client'
 import createClient from '../utils/ccxt'
 import { type OrderBook } from 'ccxt'
+import { castToRef } from '~/utils/vue/cast'
 
-const useOrderbookWebsocket = (options: {
-  exchangeId: string
-  symbol: string
-  interval: number
+interface Options {
   limit?: number
   round?: number
-  exchangeOptions?: any
-}): { orderbook: Ref<OrderBook>; pending: Ref<boolean> } => {
-  const client = ref<Client>(createClient(options.exchangeId, options.exchangeOptions))
-  const orderbook = ref<OrderBook & { symbol: string }>(null)
+  exchangeOptions?: object
+}
+
+const emptyOrderbook = {
+  asks: [],
+  bids: [],
+  symbol: '',
+  timestamp: 0,
+  datetime: '',
+  nonce: 0,
+}
+
+const useOrderbookWebsocket = (
+  exchangeId: string | Ref<string>,
+  symbol: string | Ref<string>,
+  interval: number | Ref<number>,
+  options: Options | Ref<Options>
+): {
+  orderbook: Ref<OrderBook>
+  pending: Ref<boolean>
+} => {
+  const exchangeIdRef = castToRef(exchangeId)
+  const symbolRef = castToRef(symbol)
+  const intervalRef = castToRef(interval)
+  const optionsRef = castToRef({
+    ...{
+      limit: 50,
+      round: null,
+      exchangeOptions: {},
+    },
+    ...(isRef(options) ? options.value : options),
+  })
+
+  const orderbook = ref<OrderBook & { symbol: string }>(emptyOrderbook)
   const pending = ref(true)
   // @ts-expect-error('nodejs')
   const timer = ref<Timer>(null)
 
-  const defaults = {
-    limit: 50,
-    round: null,
-    exchangeOptions: {},
-  }
+  const client = computed(() => createClient(exchangeIdRef.value, optionsRef.value?.exchangeOptions))
 
   onMounted(async () => {
     await start()
@@ -30,32 +53,30 @@ const useOrderbookWebsocket = (options: {
     stop()
   })
   const watchOrderbook = async (): Promise<void> => {
-    const { symbol, interval } = { ...defaults, ...options }
-    await client.value.watchOrderbook({ symbol })
-    updateOrderbook(client.value.getOrderbookFromSocket(symbol))
+    await client.value.watchOrderbook({ symbol: symbolRef.value })
+    updateOrderbook(client.value.getOrderbookFromSocket(symbolRef.value))
     pending.value = false
 
     timer.value = setInterval(() => {
-      updateOrderbook(client.value.getOrderbookFromSocket(symbol))
-    }, interval)
+      updateOrderbook(client.value.getOrderbookFromSocket(symbolRef.value))
+    }, intervalRef.value)
   }
 
   const updateOrderbook = (newOrderbook: OrderBook): void => {
-    const { symbol, limit } = { ...defaults, ...options }
+    const limit = optionsRef.value?.limit
     orderbook.value = {
       asks: roundOrderbook(newOrderbook.asks).slice(0, limit),
       bids: roundOrderbook(newOrderbook.bids).slice(0, limit),
       datetime: newOrderbook.datetime,
       timestamp: newOrderbook.timestamp,
       nonce: newOrderbook.nonce,
-      symbol,
+      symbol: symbolRef.value,
     }
   }
 
   const roundOrderbook = (priceSizes: Array<[number, number]>): Array<[number, number]> => {
     const aggregatedData: Record<number, number> = {}
-    const { round } = { ...defaults, ...options }
-
+    const round = optionsRef.value?.round
     if (round === null) {
       return priceSizes
     } else {
@@ -77,6 +98,16 @@ const useOrderbookWebsocket = (options: {
   const stop = (): void => {
     clearInterval(timer.value)
   }
+
+  const init = async (): Promise<void> => {
+    stop()
+    pending.value = true
+    await start()
+  }
+
+  watch(symbolRef, async () => {
+    await init()
+  })
 
   return { orderbook, pending }
 }
