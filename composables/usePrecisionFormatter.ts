@@ -12,8 +12,8 @@ const usePrecisionFormatter = (
 } => {
   const { findMarket } = useCcxtClient(exchangeId, exchangeOptions)
 
-  const getPricePrecision = (symbol: string): number | null => findMarket(symbol).precision.price ?? null
-  const getSizePrecision = (symbol: string): number | null => findMarket(symbol).precision.amount ?? null
+  const getPricePrecision = (symbol: string): number | null => findMarket(symbol)?.precision?.price ?? null
+  const getSizePrecision = (symbol: string): number | null => findMarket(symbol)?.precision?.amount ?? null
   const formatValue = (value: number, precision: number | null, withShortForm: boolean = false): string => {
     if (precision === null) {
       return value.toString()
