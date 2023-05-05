@@ -5,11 +5,24 @@ import Binancecoinm from './binancecoinm'
 import { UnsupportedExchangeError } from '../exceptions'
 
 export const createClient = (exchangeId: string, options: ExchangeOptions = {}): CcxtClient => {
+  const conf = useRuntimeConfig()
   switch (exchangeId) {
     case 'binanceusdm':
-      return new Binanceusdm(options)
+      return new Binanceusdm({
+        ...{
+          apiKey: conf.binance.apiKey,
+          secret: conf.binance.secret,
+        },
+        ...options,
+      })
     case 'binancecoinm':
-      return new Binancecoinm(options)
+      return new Binancecoinm({
+        ...{
+          apiKey: conf.binance.apiKey,
+          secret: conf.binance.secret,
+        },
+        ...options,
+      })
     default:
       throw new UnsupportedExchangeError(`Exchange ${exchangeId} is not supported`)
   }
