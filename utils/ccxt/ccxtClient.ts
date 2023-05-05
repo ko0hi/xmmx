@@ -53,9 +53,8 @@ class CcxtClient {
     return await this.exchange.fetchOHLCV(symbol, timeframe, since, limit)
   }
 
-  fetchBalance = async (exchange: Exchange, params: FetchBalanceParams): Promise<Balances> => {
-    const { type } = params
-    return await exchange.fetchBalance(type)
+  fetchBalance = async (): Promise<Balances> => {
+    return await this.exchange.fetchBalance()
   }
 
   fetchOrder = async (params: FetchOrderParams): Promise<Order> => {
