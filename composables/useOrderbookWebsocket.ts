@@ -1,6 +1,7 @@
 import { ComputedRef, onMounted, onUnmounted, type Ref, ref, readonly } from 'vue'
 import { type OrderBook } from 'ccxt'
 import { castToRef } from '~/utils/vue/cast'
+import { Socket } from 'socket.io-client'
 
 interface Options {
   limit?: number | Ref<number>
@@ -45,6 +46,8 @@ const useOrderbookWebsocket = (
   const orderbook = ref<OrderBookWithSymbol>(emptyOrderbook)
   const pending = ref(true)
 
+  const socket = ref<Socket>()
+
   // @ts-expect-error('nodejs')
   const timer = ref<Timer>(null)
 
@@ -52,13 +55,16 @@ const useOrderbookWebsocket = (
 
   const updateOrderbook = async () => {
     const newOrderbook = client.value.getOrderbookFromSocket(symbolRef.value)
-    orderbook.value = {
-      asks: roundOrderbook(newOrderbook.asks, 'ask').slice(0, limitRef.value),
-      bids: roundOrderbook(newOrderbook.bids, 'bid').slice(0, limitRef.value),
-      datetime: newOrderbook.datetime,
-      timestamp: newOrderbook.timestamp,
-      nonce: newOrderbook.nonce,
-      symbol: symbolRef.value,
+    if (newOrderbook) {
+      orderbook.value = {
+        asks: roundOrderbook(newOrderbook.asks, 'ask').slice(0, limitRef.value),
+        bids: roundOrderbook(newOrderbook.bids, 'bid').slice(0, limitRef.value),
+        datetime: newOrderbook.datetime,
+        timestamp: newOrderbook.timestamp,
+        nonce: newOrderbook.nonce,
+        symbol: symbolRef.value,
+      }
+      pending.value = false
     }
   }
 
@@ -85,15 +91,13 @@ const useOrderbookWebsocket = (
 
   const start = async (): Promise<void> => {
     pending.value = true
-
-    await client.value.watchOrderbook({ symbol: symbolRef.value })
+    socket.value = await client.value.watchOrderbook({ symbol: symbolRef.value })
     await updateOrderbook()
     timer.value = setInterval(updateOrderbook, intervalRef.value)
-
-    pending.value = false
   }
   const stop = (): void => {
     pending.value = true
+    socket.value?.disconnect()
     clearInterval(timer.value)
   }
 
