@@ -2,9 +2,8 @@
 export default defineNuxtConfig({
   modules: ['@nuxtjs/tailwindcss', '@pinia/nuxt', '@element-plus/nuxt'],
   runtimeConfig: {
-    binance: {
-      apiKey: process.env.XMMX_BINANCE_API_KEY,
-      secret: process.env.XMMX_BINANCE_SECRET_KEY,
+    public: {
+      ccxtServerUrl: process.env.CCXT_SERVER_URL || 'http://localhost:3001',
     },
   },
   tailwindcss: {

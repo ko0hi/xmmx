@@ -27,16 +27,19 @@ import type {
   WatchOrderbookParams,
   WatchTradesParams,
 } from './types'
+import { io, Socket } from 'socket.io-client'
 
 class CcxtClient {
   protected exchange: Exchange
+  private ccxtServerUrl: string
 
   constructor(ExchangeClass: new (options: ExchangeOptions) => Exchange, options: ExchangeOptions) {
     this.exchange = new ExchangeClass(options)
+    this.ccxtServerUrl = useRuntimeConfig().public.ccxtServerUrl
   }
 
   fetchMarkets = async (): Promise<Market[]> => {
-    return await this.exchange.fetchMarkets()
+    return await $fetch(`${this.ccxtServerUrl}/api/v1/markets?exchangeId=${this.exchange.id}`)
   }
 
   fetchTicker = async (params: FetchTickerParams): Promise<any> => {
@@ -114,8 +117,23 @@ class CcxtClient {
     await this.exchange.watchOrderBook(params.symbol)
   }
 
-  watchOrderbook = async (params: WatchOrderbookParams): Promise<void> => {
-    await this.exchange.watchOrderBook(params.symbol, params.limit)
+  watchOrderbook = async (params: WatchOrderbookParams): Promise<Socket> => {
+    const socket = io(this.ccxtServerUrl)
+
+    socket.on('connect', () => {
+      socket.emit('subscribeOrderbook', { exchangeId: this.exchange.id, symbol: params.symbol })
+    })
+
+    socket.on('orderbook', data => {
+      // @ts-ignore
+      this.exchange.orderbooks[data.symbol] = data.orderbook
+    })
+
+    socket.on('disconnect', () => {
+      console.log(`watchOrderbook with %o got disconnected.`, { exchange: this.exchange.id, ...params })
+    })
+
+    return socket
   }
 
   watchTrades = async (params: WatchTradesParams): Promise<void> => {
