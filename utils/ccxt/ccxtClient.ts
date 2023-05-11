@@ -1,37 +1,36 @@
 import {
+  type Balances,
   type Exchange,
   type Market,
-  type OrderBook,
   type OHLCV,
-  type Balances,
   type Order,
-  type Trade,
+  type OrderBook,
   type Ticker,
+  type Trade,
 } from 'ccxt'
 import type {
-  FetchTickerParams,
-  FetchOrderbookParams,
-  FetchOHLCVParams,
-  FetchBalanceParams,
-  FetchOrderParams,
-  FetchOpenOrdersParams,
-  FetchClosedOrdersParams,
-  FetchMyTradesParams,
-  CreateOrderParams,
-  EditOrderParams,
+  CancelAllOrdersParams,
   CancelOrderParams,
   CancelOrdersParams,
-  CancelAllOrdersParams,
+  CreateOrderParams,
+  EditOrderParams,
   ExchangeOptions,
-  WatchTickerParams,
+  FetchClosedOrdersParams,
+  FetchMyTradesParams,
+  FetchOHLCVParams,
+  FetchOpenOrdersParams,
+  FetchOrderbookParams,
+  FetchOrderParams,
+  FetchTickerParams,
   WatchOrderbookParams,
+  WatchTickerParams,
   WatchTradesParams,
 } from './types'
 import { io, Socket } from 'socket.io-client'
 
 class CcxtClient {
   protected exchange: Exchange
-  private ccxtServerUrl: string
+  protected ccxtServerUrl: string
 
   constructor(ExchangeClass: new (options: ExchangeOptions) => Exchange, options: ExchangeOptions) {
     this.exchange = new ExchangeClass(options)
@@ -65,14 +64,28 @@ class CcxtClient {
     return await this.exchange.fetchOrder(id, symbol, extraParams)
   }
 
-  fetchOpenOrders = async (params: FetchOpenOrdersParams): Promise<Order[]> => {
-    const { symbol, since, limit, params: extraParams } = params
-    return await this.exchange.fetchOpenOrders(symbol, since, limit, extraParams)
+  fetchOpenOrders = async (params: FetchOpenOrdersParams | null = null): Promise<Order[]> => {
+    return await $fetch(`${this.ccxtServerUrl}/api/v1/orders`, {
+      method: 'GET',
+      params: {
+        exchangeId: this.exchange.id,
+        symbol: params?.symbol,
+      },
+    })
   }
 
   fetchClosedOrders = async (params: FetchClosedOrdersParams): Promise<Order[]> => {
     const { symbol, since, limit, params: extraParams } = params
     return await this.exchange.fetchClosedOrders(symbol, since, limit, extraParams)
+  }
+
+  fetchOrders = async (): Promise<Order[]> => {
+    return await $fetch(`${this.ccxtServerUrl}/api/v1/orders`, {
+      method: 'GET',
+      params: {
+        exchangeId: this.exchange.id,
+      },
+    })
   }
 
   createOrder = async (params: CreateOrderParams): Promise<Order> => {
