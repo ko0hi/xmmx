@@ -26,13 +26,26 @@ type BinanceOrderResponse = {
   workingType: string
 }
 
+const orderStatuses: { [key in string]: string } = {
+  NEW: 'open',
+  PARTIALLY_FILLED: 'open',
+  ACCEPTED: 'open',
+  FILLED: 'closed',
+  CANCELED: 'canceled',
+  CANCELLED: 'canceled',
+  PENDING_CANCEL: 'canceling',
+  REJECTED: 'rejected',
+  EXPIRED: 'expired',
+  EXPIRED_IN_MATCH: 'expired',
+}
+
 const mapBinanceOrderResponseToCcxtOrder = (o: BinanceOrderResponse): Order => ({
   id: o.orderId,
   clientOrderId: o.clientOrderId,
   datetime: new Date(parseInt(o.time)).toISOString(),
   timestamp: parseInt(o.time),
   lastTradeTimestamp: parseInt(o.updateTime),
-  status: o.status.toLowerCase(),
+  status: orderStatuses[o.status],
   symbol: o.symbol.replace('USDT', '/USDT:USDT'),
   type: o.type.toLowerCase(),
   timeInForce: o.timeInForce,
@@ -57,7 +70,7 @@ class Binanceusdm extends CcxtClient {
   }
 
   fetchOpenOrders = async (params: FetchOpenOrdersParams | null = null): Promise<Order[]> => {
-    const orders = await $fetch<BinanceOrderResponse[]>(`${this.ccxtServerUrl}/api/v1/implicits/private`, {
+    const orders = await $fetch<BinanceOrderResponse[]>(`${this.baseUrl}/v1/implicits/private`, {
       method: 'GET',
       params: {
         exchangeId: this.exchange.id,
@@ -69,7 +82,7 @@ class Binanceusdm extends CcxtClient {
   }
 
   fetchOrders = async (): Promise<Order[]> => {
-    const orders = await $fetch<BinanceOrderResponse[]>(`${this.ccxtServerUrl}/api/v1/implicits/private`, {
+    const orders = await $fetch<BinanceOrderResponse[]>(`${this.baseUrl}/v1/implicits/private`, {
       method: 'GET',
       params: {
         exchangeId: this.exchange.id,
