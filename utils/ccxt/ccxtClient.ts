@@ -22,6 +22,7 @@ import type {
   FetchOrderbookParams,
   FetchOrderParams,
   FetchTickerParams,
+  OrderState,
   WatchOrderbookParams,
   WatchTickerParams,
   WatchTradesParams,
@@ -31,14 +32,20 @@ import { io, Socket } from 'socket.io-client'
 class CcxtClient {
   protected exchange: Exchange
   protected ccxtServerUrl: string
+  protected baseUrl: string
+  private readonly orderState: OrderState
+  private readonly orderHistory: Order[]
 
   constructor(ExchangeClass: new (options: ExchangeOptions) => Exchange, options: ExchangeOptions) {
     this.exchange = new ExchangeClass(options)
     this.ccxtServerUrl = useRuntimeConfig().public.ccxtServerUrl
+    this.baseUrl = `${this.ccxtServerUrl}/api/${this.exchange.id}`
+    this.orderState = {}
+    this.orderHistory = []
   }
 
   fetchMarkets = async (): Promise<Market[]> => {
-    return await $fetch(`${this.ccxtServerUrl}/api/v1/markets?exchangeId=${this.exchange.id}`)
+    return await $fetch(`${this.baseUrl}/v1/markets`)
   }
 
   fetchTicker = async (params: FetchTickerParams): Promise<any> => {
@@ -65,7 +72,7 @@ class CcxtClient {
   }
 
   fetchOpenOrders = async (params: FetchOpenOrdersParams | null = null): Promise<Order[]> => {
-    return await $fetch(`${this.ccxtServerUrl}/api/v1/orders`, {
+    return await $fetch(`${this.baseUrl}/v1/orders`, {
       method: 'GET',
       params: {
         exchangeId: this.exchange.id,
@@ -80,7 +87,7 @@ class CcxtClient {
   }
 
   fetchOrders = async (): Promise<Order[]> => {
-    return await $fetch(`${this.ccxtServerUrl}/api/v1/orders`, {
+    return await $fetch(`${this.baseUrl}/v1/orders`, {
       method: 'GET',
       params: {
         exchangeId: this.exchange.id,
@@ -89,8 +96,17 @@ class CcxtClient {
   }
 
   createOrder = async (params: CreateOrderParams): Promise<Order> => {
-    const { symbol, type, side, amount, price, params: extraParams } = params
-    return await this.exchange.createOrder(symbol, type, side, amount, price, extraParams)
+    const { symbol, type, side, amount, price } = params
+    return await $fetch(`${this.baseUrl}/v1/createOrder`, {
+      method: 'POST',
+      body: {
+        symbol,
+        type,
+        side,
+        amount,
+        price,
+      },
+    })
   }
 
   editOrder = async (params: EditOrderParams): Promise<Order> => {
@@ -100,7 +116,13 @@ class CcxtClient {
 
   cancelOrder = async (params: CancelOrderParams): Promise<Order> => {
     const { id, symbol, params: extraParams } = params
-    return await this.exchange.cancelOrder(id, symbol, extraParams)
+    return await $fetch(`${this.baseUrl}/v1/cancelOrder`, {
+      method: 'POST',
+      body: {
+        id,
+        symbol,
+      },
+    })
   }
 
   cancelOrders = async (params: CancelOrdersParams): Promise<Order[]> => {
@@ -153,6 +175,31 @@ class CcxtClient {
     await this.exchange.watchTrades(params.symbol)
   }
 
+  watchOrders = async (onOrdersUpdate?: (orders: Order[], state: OrderState) => void): Promise<Socket> => {
+    const socket = io(this.ccxtServerUrl)
+
+    socket.on('connect', () => {
+      socket.emit('subscribeOrders', { exchangeId: this.exchange.id })
+    })
+
+    socket.on('orders', (data: { orders: Order[] }) => {
+      for (const order of data.orders) {
+        this.orderState[order.id] = order
+        this.orderHistory.push(order)
+      }
+
+      if (onOrdersUpdate) {
+        onOrdersUpdate(data.orders, this.orderState)
+      }
+    })
+
+    socket.on('disconnect', () => {
+      console.log(`watchOrders with %o got disconnected.`, { exchange: this.exchange.id })
+    })
+
+    return socket
+  }
+
   // @ts-expect-error('no type in ccxt')
   sleep = async (interval: number): Promise<void> => this.exchange.sleep(interval)
   // @ts-expect-error('no type in ccxt')
@@ -162,7 +209,13 @@ class CcxtClient {
 
   getTradesFromSocket = (symbol: string): Trade => this.exchange.trades[symbol]
 
+  getOrderStateFromSocket = (): OrderState => this.orderState
+
+  getOrdersHistoryFromSocket = (): Order[] => this.orderHistory
+
   getExchange = (): Exchange => this.exchange
+
+  initializeOrders = async () => (await this.fetchOrders()).forEach(o => (this.orderState[o.id] = o))
 }
 
 export default CcxtClient
