@@ -4,6 +4,7 @@ import dayjs from 'dayjs'
 import useCcxtClient from '~/composables/useCcxtClient'
 import useEditOrder from '~/composables/useEditOrder'
 import FontawesomeIconWrapper from '~/components/fontawesome-icon-wrapper.vue'
+import useCurrencyIcon from '~/composables/useCurrencyIcon'
 
 const props = defineProps<{
   exchangeId: string
@@ -113,7 +114,7 @@ const columns = computed(() => [
       h('div', { class: 'flex justify-center items-center gap-2' }, [
         h('img', {
           class: 'w-4',
-          src: `/cryptocurrency/icon/${row.symbol.split('/')[0].toLowerCase()}.svg`,
+          src: useCurrencyIcon(row.symbol).iconPath,
         }),
         h('span', { class: 'text-xs' }, row.symbol),
       ]),
