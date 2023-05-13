@@ -20,6 +20,8 @@ watch(orderState, () => {
 
 const orders = computed(() => Object.values(orderState.value).sort((a, b) => b.timestamp - a.timestamp))
 
+const symbolSet = computed(() => [...new Set(orders.value.map(o => o.symbol))])
+
 const columns = computed(() => [
   {
     title: '',
@@ -103,6 +105,8 @@ const columns = computed(() => [
     title: 'Symbol',
     key: 'symbol',
     align: 'center',
+    filterOptions: symbolSet.value.map(s => ({ label: s, value: s })),
+    filter: (value, row) => row.symbol == value,
     width: 180,
     resizable: true,
     render: (row: Order) =>
@@ -276,7 +280,6 @@ const columns = computed(() => [
 
 <template>
   <div>
-    <img src="/cryptocurrency/icon/ltc.svg" />
     <n-data-table
       v-if="orders.length > 0"
       class="order-table"
