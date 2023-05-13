@@ -45,25 +45,19 @@ const columns = computed(() => [
     key: 'clone',
     align: 'center',
     width: 30,
-    render: (row: Order) => {
-      return h(
-        'span',
-        {
-          class: 'cursor-pointer text-blue-500',
-          onClick: async () => {
-            const { client } = useCcxtClient(props.exchangeId)
-            await client.value.createOrder({
-              symbol: row.symbol,
-              side: row.side,
-              type: row.type,
-              amount: row.amount,
-              price: row.price,
-            })
-          },
-        },
-        '♻︎'
-      )
-    },
+    render: (row: Order) =>
+      h(FontawesomeIconWrapper, {
+        class: 'cursor-pointer text-blue-500',
+        icon: ['fas', 'clone'],
+        onClick: async () =>
+          client.value.createOrder({
+            symbol: row.symbol,
+            side: row.side,
+            type: row.type,
+            amount: row.amount,
+            price: row.price,
+          }),
+      }),
   },
   {
     title: 'ID',
@@ -111,7 +105,14 @@ const columns = computed(() => [
     align: 'center',
     width: 180,
     resizable: true,
-    render: (row: Order) => h('span', { class: 'text-xs' }, row.symbol),
+    render: (row: Order) =>
+      h('div', { class: 'flex items-center gap-2' }, [
+        h('img', {
+          class: 'w-4',
+          src: `/cryptocurrency/icon/${row.symbol.split('/')[0].toLowerCase()}.svg`,
+        }),
+        h('span', { class: 'text-xs' }, row.symbol),
+      ]),
   },
   {
     title: 'Size',
@@ -275,6 +276,7 @@ const columns = computed(() => [
 
 <template>
   <div>
+    <img src="/cryptocurrency/icon/ltc.svg" />
     <n-data-table
       v-if="orders.length > 0"
       class="order-table"
