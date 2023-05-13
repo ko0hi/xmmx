@@ -107,10 +107,10 @@ const columns = computed(() => [
     align: 'center',
     filterOptions: symbolSet.value.map(s => ({ label: s, value: s })),
     filter: (value, row) => row.symbol == value,
-    width: 180,
+    width: 120,
     resizable: true,
     render: (row: Order) =>
-      h('div', { class: 'flex items-center gap-2' }, [
+      h('div', { class: 'flex justify-center items-center gap-2' }, [
         h('img', {
           class: 'w-4',
           src: `/cryptocurrency/icon/${row.symbol.split('/')[0].toLowerCase()}.svg`,
