@@ -15,11 +15,12 @@ const useCcxtClient = (
   findMarket: (symbol: string) => Market | null
   listAvailableMarkets: () => string[]
   getTickSize: (symbol: string) => number | null
+  getLotSize: (symbol: string) => number | null
 } => {
   const exchangeIdRef = castToRef(exchangeId)
   const exchangeOptionsRef = castToRef(exchangeOptions)
 
-  const { initMarket, findMarket, listAvailableMarkets, getTickSize } = useMarkets()
+  const { initMarket, findMarket, listAvailableMarkets, getTickSize, getLotSize } = useMarkets()
 
   const client = computed(() => createClient(exchangeIdRef.value, exchangeOptionsRef.value))
 
@@ -39,6 +40,7 @@ const useCcxtClient = (
     findMarket: (symbol: string) => findMarket(exchangeIdRef.value, symbol),
     listAvailableMarkets: () => listAvailableMarkets(exchangeIdRef.value),
     getTickSize: (symbol: string) => getTickSize(exchangeIdRef.value, symbol),
+    getLotSize: (symbol: string) => getLotSize(exchangeIdRef.value, symbol),
   }
 }
 
