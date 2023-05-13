@@ -111,7 +111,17 @@ class CcxtClient {
 
   editOrder = async (params: EditOrderParams): Promise<Order> => {
     const { id, symbol, type, side, amount, price, params: extraParams } = params
-    return await this.exchange.editOrder(id, symbol, type, side, amount, price, extraParams)
+    return await $fetch(`${this.baseUrl}/v1/editOrder`, {
+      method: 'POST',
+      body: {
+        id: id,
+        symbol: symbol,
+        type: type,
+        side: side,
+        amount: amount,
+        price: price,
+      },
+    })
   }
 
   cancelOrder = async (params: CancelOrderParams): Promise<Order> => {
@@ -184,7 +194,8 @@ class CcxtClient {
 
     socket.on('orders', (data: { orders: Order[] }) => {
       for (const order of data.orders) {
-        this.orderState[order.id] = order
+        console.log('Order', order)
+        this.orderState[order.id] = { ...this.orderState[order.id], ...order }
         this.orderHistory.push(order)
       }
 

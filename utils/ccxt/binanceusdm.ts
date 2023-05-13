@@ -1,4 +1,4 @@
-import { type ExchangeOptions, FetchOpenOrdersParams } from './types'
+import { EditOrderParams, type ExchangeOptions, FetchOpenOrdersParams } from './types'
 import ccxt, { Order } from 'ccxt'
 import CcxtClient from './ccxtClient'
 
@@ -73,7 +73,6 @@ class Binanceusdm extends CcxtClient {
     const orders = await $fetch<BinanceOrderResponse[]>(`${this.baseUrl}/v1/implicits/private`, {
       method: 'GET',
       params: {
-        exchangeId: this.exchange.id,
         method: 'fapiPrivateGetOpenOrders',
       },
     })
@@ -85,11 +84,26 @@ class Binanceusdm extends CcxtClient {
     const orders = await $fetch<BinanceOrderResponse[]>(`${this.baseUrl}/v1/implicits/private`, {
       method: 'GET',
       params: {
-        exchangeId: this.exchange.id,
         method: 'fapiPrivateGetAllOrders',
       },
     })
     return orders.map(mapBinanceOrderResponseToCcxtOrder)
+  }
+
+  editOrder = async (params: EditOrderParams): Promise<Order> => {
+    const resp = await $fetch<Omit<BinanceOrderResponse, 'time'>>(`${this.baseUrl}/v1/implicits/private`, {
+      method: 'PUT',
+      params: {
+        method: 'fapiPrivatePutOrder',
+        orderId: params.id,
+        symbol: params.symbol.split(':')[0].replace('/', ''),
+        side: params.side.toUpperCase(),
+        type: params.type,
+        price: params.price,
+        quantity: params.amount,
+      },
+    })
+    return mapBinanceOrderResponseToCcxtOrder({ ...resp, ...{ time: new Date().getTime().toString() } })
   }
 }
 
