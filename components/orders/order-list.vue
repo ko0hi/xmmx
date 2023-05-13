@@ -2,11 +2,16 @@
 import { Order } from 'ccxt'
 import dayjs from 'dayjs'
 import useCcxtClient from '~/composables/useCcxtClient'
+import useEditOrder from '~/composables/useEditOrder'
+import FontawesomeIconWrapper from '~/components/fontawesome-icon-wrapper.vue'
 
 const props = defineProps<{
   exchangeId: string
 }>()
 
+const { client, getTickSize, getLotSize } = useCcxtClient(props.exchangeId)
+const { formatPrice, formatSize } = usePrecisionFormatter(props.exchangeId)
+const { editOrder } = useEditOrder(props.exchangeId)
 const { orderState } = useOrderState(props.exchangeId)
 
 watch(orderState, () => {
@@ -21,21 +26,19 @@ const columns = computed(() => [
     key: 'cancel',
     align: 'center',
     width: 30,
-    render: (row: Order) => {
-      return h(
-        'span',
-        {
-          class: {
-            'cursor-pointer': row.status == 'open',
-          },
-          onClick: async () => {
-            const { client } = useCcxtClient(props.exchangeId)
-            await client.value.cancelOrder({ id: row.id, symbol: row.symbol })
-          },
-        },
-        row.status === 'open' ? '✖︎' : ''
-      )
-    },
+    render: (row: Order) =>
+      row.status == 'open'
+        ? h(FontawesomeIconWrapper, {
+            class: {
+              'cursor-pointer text-red-500': row.status == 'open',
+            },
+            icon: ['fas', 'xmark'],
+            onClick: async () => {
+              const { client } = useCcxtClient(props.exchangeId)
+              await client.value.cancelOrder({ id: row.id, symbol: row.symbol })
+            },
+          })
+        : '',
   },
   {
     title: '',
@@ -116,6 +119,50 @@ const columns = computed(() => [
     align: 'center',
     width: 100,
     resizable: true,
+    render: (row: Order) =>
+      row.type == 'limit' && row.status == 'open'
+        ? h(
+            'div',
+            {
+              class: 'flex justify-around',
+            },
+            {
+              default: () => [
+                h(
+                  'button',
+                  {
+                    class: 'n-button flex-none w-1/4',
+                    onClick: () => editOrder(row, { amount: row.amount - getLotSize(row.symbol) }),
+                  },
+                  '↓'
+                ),
+                h(
+                  'input',
+                  {
+                    class: 'text-center w-1/2',
+                    value: row.amount,
+                    onChange: e => {
+                      const newAmount = formatSize(row.symbol, parseFloat(e.target.value))
+                      e.target.value = newAmount
+                      if (newAmount != row.amount) {
+                        editOrder(row, { amount: e.target.value })
+                      }
+                    },
+                  },
+                  row.amount
+                ),
+                h(
+                  'button',
+                  {
+                    class: 'n-button flex-none w-1/4',
+                    onClick: () => editOrder(row, { amount: row.amount + getLotSize(row.symbol) }),
+                  },
+                  '↑'
+                ),
+              ],
+            }
+          )
+        : row.amount,
   },
   {
     title: 'Filled',
@@ -130,6 +177,50 @@ const columns = computed(() => [
     align: 'center',
     width: 130,
     resizable: true,
+    render: (row: Order) =>
+      row.type == 'limit' && row.status == 'open'
+        ? h(
+            'div',
+            {
+              class: 'flex justify-around',
+            },
+            {
+              default: () => [
+                h(
+                  'button',
+                  {
+                    class: 'n-button flex-none w-1/4',
+                    onClick: async () => editOrder(row, { price: row.price - getTickSize(row.symbol) }),
+                  },
+                  '↓'
+                ),
+                h(
+                  'input',
+                  {
+                    class: 'text-center w-1/2',
+                    value: row.price,
+                    onChange: e => {
+                      const newPrice = formatPrice(row.symbol, parseFloat(e.target.value))
+                      e.target.value = newPrice
+                      if (newPrice != row.price) {
+                        editOrder(row, { price: e.target.value })
+                      }
+                    },
+                  },
+                  row.price
+                ),
+                h(
+                  'button',
+                  {
+                    class: 'n-button flex-none w-1/4',
+                    onClick: async () => editOrder(row, { price: row.price + getTickSize(row.symbol) }),
+                  },
+                  '↑'
+                ),
+              ],
+            }
+          )
+        : row.price,
   },
   {
     title: 'Avg Price',
