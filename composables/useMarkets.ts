@@ -8,6 +8,7 @@ const useMarkets = (): {
   findMarket: (exchangeId: string, symbol: string) => Market | null
   listAvailableMarkets: (exchangeId: string) => string[]
   getTickSize: (exchangeId: string, symbol: string) => number | null
+  getLotSize: (exchangeId: string, symbol: string) => number | null
 } => {
   const { getMarkets, updateMarkets } = useStore()
 
@@ -45,11 +46,21 @@ const useMarkets = (): {
     }
   }
 
+  const getLotSize = (exchangeId: string, symbol: string): number | null => {
+    const mkt = findMarket(exchangeId, symbol)
+    if (mkt?.precision?.amount === undefined) {
+      return null
+    } else {
+      return 1 / Math.pow(10, mkt.precision.amount)
+    }
+  }
+
   return {
     findMarket,
     initMarket,
     listAvailableMarkets,
     getTickSize,
+    getLotSize,
   }
 }
 

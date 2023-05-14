@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, CSSProperties, ref } from 'vue'
 import useCcxtClient from '~/composables/useCcxtClient'
+import useCurrencyIcon from '~/composables/useCurrencyIcon'
 
 type OrderbookProps = {
   exchangeId?: string
@@ -30,7 +31,7 @@ const clicked = ref()
 
 const { listAvailableMarkets, getTickSize } = useCcxtClient(exchangeId, exchangeOptions)
 
-const options = computed(() => listAvailableMarkets().map(item => ({ label: item, value: item })))
+const options = computed(() => listAvailableMarkets().map(item => ({ label: `${item}`, value: item })))
 const tickSize = computed(() => {
   try {
     return getTickSize(symbol.value)
@@ -75,7 +76,18 @@ const labelStyle: CSSProperties = computed(() => ({
         />
       </n-form-item>
       <n-form-item class="my-2" label="Symbol" :label-style="labelStyle">
-        <n-select v-model:value="symbol" :options="options" filterable />
+        <n-select
+          v-model:value="symbol"
+          :options="options"
+          filterable
+          :render-label="
+            option =>
+              h('div', { class: 'flex items-center gap-2' }, [
+                h('img', { src: useCurrencyIcon(option.label).iconPath, class: 'w-3' }),
+                h('span', {}, option.label),
+              ])
+          "
+        />
       </n-form-item>
       <n-form-item class="my-2" label="Display" :label-style="labelStyle">
         <n-radio-group v-model:value="limit">

@@ -1,3 +1,5 @@
+import { Order } from 'ccxt'
+
 export interface FetchTickerParams {
   symbol: string
 }
@@ -119,3 +121,5 @@ export interface ExchangeOptions {
   useWeb3ForFetchingOrders?: boolean
   enableLiveUpdates?: boolean
 }
+
+export type OrderState = { [key in string]: Order }
