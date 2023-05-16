@@ -79,6 +79,14 @@ const columns = computed(() => [
     render: (row: Order) => dayjs(row.datetime).format('MM/DD HH:mm'),
     sorter: (a: Order, b: Order) => b.timestamp - a.timestamp,
   },
+
+  {
+    title: 'Type',
+    key: 'type',
+    align: 'center',
+    width: 80,
+    resizable: true,
+  },
   {
     title: 'Side',
     key: 'side',
