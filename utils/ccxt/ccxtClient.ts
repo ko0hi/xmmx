@@ -97,7 +97,7 @@ class CcxtClient {
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  order = async (params: OrderParams): Promise<Order> => {
+  async order(params: OrderParams): Promise<Order> {
     if (params.type === 'limit' || params.type === 'market') {
       return await this.createOrder({
         symbol: params.symbol,
@@ -108,7 +108,7 @@ class CcxtClient {
         params: params.params,
       })
     } else {
-      throw new Error('Not implemented')
+      throw new Error(`Not implemented order type: ${params.type}`)
     }
   }
 
@@ -122,6 +122,7 @@ class CcxtClient {
         side,
         amount,
         price,
+        ...params.params,
       },
     })
   }

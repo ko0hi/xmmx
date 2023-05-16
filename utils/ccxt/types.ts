@@ -49,7 +49,7 @@ export interface FetchMyTradesParams {
 
 export interface OrderParams {
   symbol: string
-  type: 'limit' | 'market' | 'stopLimit' | 'stopMarket'
+  type: 'limit' | 'market' | 'stopLimit' | 'stopMarket' | any
   side: 'buy' | 'sell'
   amount: number
   price?: number
@@ -61,7 +61,7 @@ export interface OrderParams {
 
 export interface CreateOrderParams {
   symbol: string
-  type: 'limit' | 'market'
+  type: 'limit' | 'market' | any
   side: 'buy' | 'sell'
   amount: number
   price?: number
