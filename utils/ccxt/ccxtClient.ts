@@ -22,6 +22,7 @@ import type {
   FetchOrderbookParams,
   FetchOrderParams,
   FetchTickerParams,
+  OrderParams,
   OrderState,
   WatchOrderbookParams,
   WatchTickerParams,
@@ -93,6 +94,22 @@ class CcxtClient {
         exchangeId: this.exchange.id,
       },
     })
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  order = async (params: OrderParams): Promise<Order> => {
+    if (params.type === 'limit' || params.type === 'market') {
+      return await this.createOrder({
+        symbol: params.symbol,
+        type: params.type,
+        side: params.side,
+        amount: params.amount,
+        price: params.price,
+        params: params.params,
+      })
+    } else {
+      throw new Error('Not implemented')
+    }
   }
 
   createOrder = async (params: CreateOrderParams): Promise<Order> => {

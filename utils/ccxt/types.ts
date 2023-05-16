@@ -47,6 +47,16 @@ export interface FetchMyTradesParams {
   params?: any
 }
 
+export interface OrderParams {
+  symbol: string
+  type: 'limit' | 'market' | 'stopLimit' | 'stopMarket'
+  side: 'buy' | 'sell'
+  amount: number
+  price?: number
+  triggerPrice?: number
+  params?: any
+}
+
 export interface CreateOrderParams {
   symbol: string
   type: 'limit' | 'market'
