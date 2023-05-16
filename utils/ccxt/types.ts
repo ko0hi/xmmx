@@ -54,6 +54,8 @@ export interface OrderParams {
   amount: number
   price?: number
   triggerPrice?: number
+  postOnly?: boolean
+  reduceOnly?: boolean
   params?: any
 }
 
