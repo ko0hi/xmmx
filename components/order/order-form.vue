@@ -1,20 +1,25 @@
 <script setup lang="ts">
-import useAvailableExchanges from '~/composables/useAvailableExchanges'
-import { ref } from 'vue'
-import useAvailableSymbols from '~/composables/useAvailableSymbols'
 import useCurrencyIcon from '~/composables/useCurrencyIcon'
+import useOrderForm from '~/composables/useOrderForm'
 
 const props = defineProps<{ exchangeId: string; symbol?: string; side?: 'BUY' | 'SELL' }>()
 
-const exchangeId = ref(props.exchangeId)
-const symbol = ref(props.symbol)
-const side = ref(props.side)
-const type = ref()
-const size = ref()
-const price = ref()
-const triggerPrice = ref()
-const reduceOnly = ref(false)
-const postOnly = ref(false)
+const {
+  exchangeId,
+  symbol,
+  side,
+  type,
+  size,
+  price,
+  triggerPrice,
+  reduceOnly,
+  postOnly,
+  requiredFields,
+  exchangeSelectOptionsForNaiveUi,
+  symbolSelectOptionsForNaiveUi,
+  tickSize,
+  lotSize,
+} = useOrderForm()
 
 const slotArgs = computed(() => ({
   exchange: exchangeId.value,
@@ -28,12 +33,21 @@ const slotArgs = computed(() => ({
   postOnly: postOnly.value,
 }))
 
-const { exchangeSelectOptionsForNaiveUi } = useAvailableExchanges()
-const { symbolSelectOptionsForNaiveUi } = useAvailableSymbols(exchangeId)
-const { client, getTickSize, getLotSize } = useCcxtClient(exchangeId)
+onBeforeMount(() => {
+  exchangeId.value = props.exchangeId
+
+  if (props.symbol) {
+    symbol.value = props.symbol
+  }
+  if (props.side) {
+    side.value = props.side
+  }
+})
 
 const onSubmit = async (s: string) => {
   side.value = s
+
+  const { client } = useCcxtClient(exchangeId)
 
   await client.value.order({
     symbol: symbol.value,
@@ -50,13 +64,13 @@ const onSubmit = async (s: string) => {
 
 <template>
   <n-form label-placement="left" label-align="right">
-    <n-form-item label="exchange">
-      <slot name="exchange" :config="slotArgs">
+    <slot name="exchange" :config="slotArgs">
+      <n-form-item label="Exchange">
         <n-select v-model:value="exchangeId" :options="exchangeSelectOptionsForNaiveUi" filterable />
-      </slot>
-    </n-form-item>
-    <n-form-item label="symbol">
-      <slot name="symbol" :config="slotArgs">
+      </n-form-item>
+    </slot>
+    <slot name="symbol" :config="slotArgs">
+      <n-form-item label="Symbol">
         <n-select
           v-model:value="symbol"
           :options="symbolSelectOptionsForNaiveUi"
@@ -69,10 +83,10 @@ const onSubmit = async (s: string) => {
           "
           filterable
         />
-      </slot>
-    </n-form-item>
-    <n-form-item label="Type">
-      <slot name="type" :config="slotArgs">
+      </n-form-item>
+    </slot>
+    <slot name="type" :config="slotArgs">
+      <n-form-item label="Type">
         <n-select
           v-model:value="type"
           :options="[
@@ -83,33 +97,33 @@ const onSubmit = async (s: string) => {
           ]"
           filterable
         />
-      </slot>
-    </n-form-item>
-    <n-form-item label="Price">
-      <slot name="price" :config="slotArgs">
-        <n-input-number v-model:value="price" :step="getTickSize(symbol)" :disabled="!symbol && !side" />
-      </slot>
-    </n-form-item>
-    <n-form-item label="Size">
-      <slot name="size" :config="slotArgs">
-        <n-input-number v-model:value="size" :step="getLotSize(symbol)" :disabled="!symbol && !side" />
-      </slot>
-    </n-form-item>
-    <n-form-item label="Trigger Price">
-      <slot name="triggerPrice" :config="slotArgs">
-        <n-input-number v-model:value="triggerPrice" :step="getTickSize(symbol)" :disabled="!symbol && !side" />
-      </slot>
-    </n-form-item>
-    <n-form-item label="Reduce Only">
-      <slot name="reduceOnly" :config="slotArgs">
+      </n-form-item>
+    </slot>
+    <slot name="price" :config="slotArgs">
+      <n-form-item v-if="requiredFields.includes('price')" label="Price">
+        <n-input-number v-model:value="price" :step="tickSize" :disabled="!symbol && !side" />
+      </n-form-item>
+    </slot>
+    <slot name="size" :config="slotArgs">
+      <n-form-item v-if="requiredFields.includes('size')" label="Size">
+        <n-input-number v-model:value="size" :step="lotSize" :disabled="!symbol && !side" />
+      </n-form-item>
+    </slot>
+    <slot name="triggerPrice" :config="slotArgs">
+      <n-form-item v-if="requiredFields.includes('triggerPrice')" label="Trigger Price">
+        <n-input-number v-model:value="triggerPrice" :step="tickSize" :disabled="!symbol && !side" />
+      </n-form-item>
+    </slot>
+    <slot name="reduceOnly" :config="slotArgs">
+      <n-form-item label="Reduce Only">
         <n-checkbox v-model:checked="reduceOnly" />
-      </slot>
-    </n-form-item>
-    <n-form-item label="Post Only">
-      <slot name="postOnly" :config="slotArgs">
+      </n-form-item>
+    </slot>
+    <slot name="postOnly" :config="slotArgs">
+      <n-form-item v-if="type === 'limit' || type === 'stopLimit'" label="Post Only">
         <n-checkbox v-model:checked="postOnly" />
-      </slot>
-    </n-form-item>
+      </n-form-item>
+    </slot>
   </n-form>
   <div class="flex m-5">
     <n-button class="rounded-md w-16 side-button-buy" type="success" @click="onSubmit('buy')">BUY </n-button>
