@@ -29,6 +29,7 @@ const useMarkets = (): {
     if (mkt === undefined) {
       throw new MarketNotFoundError(`${exchangeId} - ${symbol}`)
     }
+
     return mkt
   }
 
