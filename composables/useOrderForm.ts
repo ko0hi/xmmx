@@ -28,7 +28,15 @@ const useOrderForm = () => {
     }
   })
 
-  watch(type, () => console.log(type.value))
+  const reset = () => {
+    price.value = null
+    size.value = null
+    triggerPrice.value = null
+    reduceOnly.value = false
+    postOnly.value = false
+  }
+
+  watch(type, reset)
 
   return {
     exchangeId,
@@ -41,6 +49,7 @@ const useOrderForm = () => {
     reduceOnly,
     postOnly,
     requiredFields,
+    reset,
     exchangeSelectOptionsForNaiveUi: useAvailableExchanges().exchangeSelectOptionsForNaiveUi.value,
     symbolSelectOptionsForNaiveUi: computed(() => useAvailableSymbols(exchangeId).symbolSelectOptionsForNaiveUi).value,
     // symbolSelectOptionsForNaiveUi: computed(() =>
