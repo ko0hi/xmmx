@@ -1,4 +1,4 @@
-import { ComputedRef, onMounted, onUnmounted, type Ref, ref, readonly } from 'vue'
+import { onMounted, onUnmounted, readonly, ref, type Ref } from 'vue'
 import { type OrderBook } from 'ccxt'
 import { castToRef } from '~/utils/vue/cast'
 import { Socket } from 'socket.io-client'
@@ -21,9 +21,9 @@ const emptyOrderbook: OrderBookWithSymbol = {
 }
 
 const useOrderbookWebsocket = (
-  exchangeId: string | ComputedRef<string>,
-  symbol: string | ComputedRef<string>,
-  interval: number | ComputedRef<number>,
+  exchangeId: string | Ref<string>,
+  symbol: string | Ref<string>,
+  interval: number | Ref<number>,
   options: Options
 ): {
   orderbook: Readonly<

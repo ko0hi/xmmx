@@ -4,5 +4,9 @@ module.exports = {
   theme: {
     extend: {},
   },
+  corePlugins: {
+    // https://blog.csdn.net/ttowx/article/details/127569903
+    preflight: false,
+  },
   plugins: [require('daisyui')],
 }

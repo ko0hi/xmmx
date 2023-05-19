@@ -1,11 +1,8 @@
-import { ComputedRef } from 'vue'
 import useCcxtClient from '~/composables/useCcxtClient'
 import { ExchangeOptions } from '~/utils/ccxt/types'
+import { Ref } from 'vue'
 
-const useOrders = (
-  exchangeId: string | ComputedRef<string>,
-  exchangeOptions: ExchangeOptions | ComputedRef<ExchangeOptions> = {}
-) => {
+const useOrders = (exchangeId: string | Ref<string>, exchangeOptions: ExchangeOptions | Ref<ExchangeOptions> = {}) => {
   const { client } = useCcxtClient(exchangeId, exchangeOptions)
   const orderState = computed(() => client.value.getOrderStateFromSocket())
 

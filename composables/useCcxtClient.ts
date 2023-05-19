@@ -6,8 +6,8 @@ import useMarkets from '~/composables/useMarkets'
 import { Market } from 'ccxt'
 
 const useCcxtClient = (
-  exchangeId: string | ComputedRef<string>,
-  exchangeOptions: object | ComputedRef<object> = {}
+  exchangeId: string | Ref<string>,
+  exchangeOptions: object | Ref<object> = {}
 ): {
   exchangeIdRef: Readonly<Ref<string>>
   exchangeOptionsRef: Readonly<Ref<object>>
@@ -28,7 +28,10 @@ const useCcxtClient = (
   watch(
     [exchangeIdRef, exchangeOptionsRef],
     async () => {
-      await initMarket(exchangeIdRef.value, exchangeOptionsRef.value)
+      if (exchangeIdRef.value) {
+        console.log(exchangeIdRef.value)
+        await initMarket(exchangeIdRef.value, exchangeOptionsRef.value)
+      }
     },
     { immediate: true }
   )

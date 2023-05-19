@@ -1,6 +1,7 @@
-import { EditOrderParams, type ExchangeOptions, FetchOpenOrdersParams } from './types'
+import { EditOrderParams, type ExchangeOptions, FetchOpenOrdersParams, OrderParams } from './types'
 import ccxt, { Order } from 'ccxt'
 import CcxtClient from './ccxtClient'
+import { UnsupportedOrderTypeError } from '~/utils/exceptions'
 
 type BinanceOrderResponse = {
   orderId: string
@@ -69,6 +70,7 @@ class Binanceusdm extends CcxtClient {
     super(ccxt.pro.binanceusdm, options)
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   fetchOpenOrders = async (params: FetchOpenOrdersParams | null = null): Promise<Order[]> => {
     const orders = await $fetch<BinanceOrderResponse[]>(`${this.baseUrl}/v1/implicits/private`, {
       method: 'GET',
@@ -88,6 +90,46 @@ class Binanceusdm extends CcxtClient {
       },
     })
     return orders.map(mapBinanceOrderResponseToCcxtOrder)
+  }
+
+  order = async (params: OrderParams): Promise<Order> => {
+    if (params.postOnly) {
+      params.params = { ...params.params, timeInForce: 'GTX' }
+    }
+
+    if (params.reduceOnly) {
+      params.params = { ...params.params, reduceOnly: true }
+    }
+
+    switch (params.type) {
+      case 'limit':
+        return await super.order(params)
+      case 'market':
+        return await super.order(params)
+      case 'stopMarket':
+        return await this.createOrder({
+          symbol: params.symbol,
+          type: 'STOP_MARKET',
+          side: params.side,
+          amount: params.amount,
+          params: {
+            stopPrice: params.triggerPrice,
+          },
+        })
+      case 'stopLimit':
+        return await this.createOrder({
+          symbol: params.symbol,
+          type: 'STOP',
+          side: params.side,
+          amount: params.amount,
+          price: params.price,
+          params: {
+            stopPrice: params.triggerPrice,
+          },
+        })
+      default:
+        throw new UnsupportedOrderTypeError(`${params.type} for ${this.exchange.id}`)
+    }
   }
 
   editOrder = async (params: EditOrderParams): Promise<Order> => {

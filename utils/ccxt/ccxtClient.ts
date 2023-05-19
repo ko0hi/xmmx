@@ -22,6 +22,7 @@ import type {
   FetchOrderbookParams,
   FetchOrderParams,
   FetchTickerParams,
+  OrderParams,
   OrderState,
   WatchOrderbookParams,
   WatchTickerParams,
@@ -95,6 +96,22 @@ class CcxtClient {
     })
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  async order(params: OrderParams): Promise<Order> {
+    if (params.type === 'limit' || params.type === 'market') {
+      return await this.createOrder({
+        symbol: params.symbol,
+        type: params.type,
+        side: params.side,
+        amount: params.amount,
+        price: params.price,
+        params: params.params,
+      })
+    } else {
+      throw new Error(`Not implemented order type: ${params.type}`)
+    }
+  }
+
   createOrder = async (params: CreateOrderParams): Promise<Order> => {
     const { symbol, type, side, amount, price } = params
     return await $fetch(`${this.baseUrl}/v1/createOrder`, {
@@ -105,6 +122,7 @@ class CcxtClient {
         side,
         amount,
         price,
+        ...params.params,
       },
     })
   }

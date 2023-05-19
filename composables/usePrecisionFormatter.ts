@@ -1,9 +1,9 @@
-import { ComputedRef } from 'vue'
+import { ComputedRef, Ref } from 'vue'
 import useCcxtClient from '~/composables/useCcxtClient'
 
 const usePrecisionFormatter = (
-  exchangeId: string | ComputedRef<string>,
-  exchangeOptions: object = {}
+  exchangeId: string | Ref<string>,
+  exchangeOptions: object | Ref<string> = {}
 ): {
   getPricePrecision: (symbol: string) => number | null
   formatSize: (symbol: string, value: number) => string
