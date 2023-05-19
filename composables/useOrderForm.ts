@@ -1,17 +1,27 @@
-import { ref } from 'vue'
+import { Ref, ref } from 'vue'
 import useAvailableExchanges from '~/composables/useAvailableExchanges'
 import useAvailableSymbols from '~/composables/useAvailableSymbols'
 
-const useOrderForm = () => {
-  const exchangeId = ref()
-  const symbol = ref()
-  const side = ref()
-  const type = ref()
-  const size = ref()
-  const price = ref()
-  const triggerPrice = ref()
-  const reduceOnly = ref(false)
-  const postOnly = ref(false)
+const useOrderForm = (initialParams: {
+  exchangeId?: string
+  symbol?: string
+  side?: 'buy' | 'sell'
+  type?: 'limit' | 'market' | 'stopLimit' | 'stopMarket'
+  price?: number
+  size?: number
+  triggerPrice?: number
+  reduceOnly?: boolean
+  postOnly?: boolean
+}) => {
+  const exchangeId = ref(initialParams.exchangeId || null)
+  const symbol = ref(initialParams.symbol || null)
+  const side = ref(initialParams.side || null)
+  const type = ref(initialParams.type || null)
+  const size = ref(initialParams.size || null)
+  const price = ref(initialParams.price || null)
+  const triggerPrice = ref(initialParams.triggerPrice || null)
+  const reduceOnly = ref(initialParams.reduceOnly || false)
+  const postOnly = ref(initialParams.postOnly || false)
 
   const requiredFields = computed(() => {
     switch (type.value) {
@@ -67,15 +77,14 @@ const useOrderForm = () => {
     isRequiredFieldsFilled,
     reset,
     exchangeSelectOptionsForNaiveUi: useAvailableExchanges().exchangeSelectOptionsForNaiveUi.value,
-    symbolSelectOptionsForNaiveUi: computed(() => useAvailableSymbols(exchangeId).symbolSelectOptionsForNaiveUi).value,
-    // symbolSelectOptionsForNaiveUi: computed(() =>
-    //   exchangeId.value ? useAvailableSymbols(exchangeId.value).symbolSelectOptionsForNaiveUi.value : []
-    // ),
+    symbolSelectOptionsForNaiveUi: computed(() =>
+      exchangeId.value !== null ? useAvailableSymbols(exchangeId as Ref<string>).symbolSelectOptionsForNaiveUi : []
+    ).value,
     tickSize: computed(() =>
-      exchangeId.value && symbol.value ? useCcxtClient(exchangeId).getTickSize(symbol.value) : null
+      exchangeId.value && symbol.value ? useCcxtClient(exchangeId as Ref<string>).getTickSize(symbol.value) : null
     ),
     lotSize: computed(() =>
-      exchangeId.value && symbol.value ? useCcxtClient(exchangeId).getLotSize(symbol.value) : null
+      exchangeId.value && symbol.value ? useCcxtClient(exchangeId as Ref<string>).getLotSize(symbol.value) : null
     ),
   }
 }

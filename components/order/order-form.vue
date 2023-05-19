@@ -1,10 +1,17 @@
 <script setup lang="ts">
 import useCurrencyIcon from '~/composables/useCurrencyIcon'
 import useOrderForm from '~/composables/useOrderForm'
-import { useDialog } from 'naive-ui'
+import { useDialog, useDialogReactiveList } from 'naive-ui'
 import OrderSummary from '~/components/order/order-summary.vue'
 
-const props = defineProps<{ exchangeId: string; symbol?: string; side?: 'BUY' | 'SELL' }>()
+const props = defineProps<{
+  exchangeId: string
+  symbol: string
+  side?: 'BUY' | 'SELL'
+  type?: 'limit' | 'market' | 'stopLimit' | 'stopMarket'
+  price?: number
+  size?: number
+}>()
 
 const {
   exchangeId,
@@ -22,7 +29,14 @@ const {
   symbolSelectOptionsForNaiveUi,
   tickSize,
   lotSize,
-} = useOrderForm()
+} = useOrderForm({
+  exchangeId: props.exchangeId,
+  symbol: props.symbol,
+  side: props.side,
+  type: props.type,
+  price: props.price,
+  size: props.size,
+})
 
 const slotArgs = computed(() => ({
   exchange: exchangeId.value,
@@ -36,18 +50,8 @@ const slotArgs = computed(() => ({
   postOnly: postOnly.value,
 }))
 
-onBeforeMount(() => {
-  exchangeId.value = props.exchangeId
-
-  if (props.symbol) {
-    symbol.value = props.symbol
-  }
-  if (props.side) {
-    side.value = props.side
-  }
-})
-
 const dialog = useDialog()
+
 const onSubmit = async (s: string) => {
   side.value = s
 
@@ -74,6 +78,8 @@ const onSubmit = async (s: string) => {
     positiveText: 'Order',
     negativeText: 'Cancel',
     onPositiveClick: async () => {
+      console.log(useDialogReactiveList())
+
       const { client } = useCcxtClient(exchangeId)
       await client.value.order({
         symbol: symbol.value,
@@ -85,6 +91,13 @@ const onSubmit = async (s: string) => {
         reduceOnly: reduceOnly.value,
         postOnly: postOnly.value,
       })
+      dialog.destroyAll()
+    },
+    onNegativeClick: async () => {
+      dialog.destroyAll()
+    },
+    onClose: () => {
+      dialog.destroyAll()
     },
   })
 }
