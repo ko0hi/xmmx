@@ -28,6 +28,21 @@ const useOrderForm = () => {
     }
   })
 
+  const isRequiredFieldsFilled = computed(() => {
+    switch (type.value) {
+      case 'limit':
+        return exchangeId.value && symbol.value && size.value && price.value
+      case 'market':
+        return exchangeId.value && symbol.value && size.value
+      case 'stopMarket':
+        return exchangeId.value && symbol.value && size.value && triggerPrice.value
+      case 'stopLimit':
+        return exchangeId.value && symbol.value && size.value && price.value && triggerPrice.value
+      default:
+        return exchangeId.value && symbol.value && size.value
+    }
+  })
+
   const reset = () => {
     price.value = null
     size.value = null
@@ -49,6 +64,7 @@ const useOrderForm = () => {
     reduceOnly,
     postOnly,
     requiredFields,
+    isRequiredFieldsFilled,
     reset,
     exchangeSelectOptionsForNaiveUi: useAvailableExchanges().exchangeSelectOptionsForNaiveUi.value,
     symbolSelectOptionsForNaiveUi: computed(() => useAvailableSymbols(exchangeId).symbolSelectOptionsForNaiveUi).value,
