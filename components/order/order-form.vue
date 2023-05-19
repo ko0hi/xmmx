@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import useCurrencyIcon from '~/composables/useCurrencyIcon'
 import useOrderForm from '~/composables/useOrderForm'
+import { useDialog } from 'naive-ui'
+import OrderSummary from '~/components/order/order-summary.vue'
 
 const props = defineProps<{ exchangeId: string; symbol?: string; side?: 'BUY' | 'SELL' }>()
 
@@ -15,6 +17,7 @@ const {
   reduceOnly,
   postOnly,
   requiredFields,
+  isRequiredFieldsFilled,
   exchangeSelectOptionsForNaiveUi,
   symbolSelectOptionsForNaiveUi,
   tickSize,
@@ -44,26 +47,51 @@ onBeforeMount(() => {
   }
 })
 
+const dialog = useDialog()
 const onSubmit = async (s: string) => {
   side.value = s
 
-  const { client } = useCcxtClient(exchangeId)
-
-  await client.value.order({
-    symbol: symbol.value,
-    type: type.value,
-    side: side.value,
-    amount: size.value,
-    price: price.value,
-    triggerPrice: triggerPrice.value,
-    reduceOnly: reduceOnly.value,
-    postOnly: postOnly.value,
+  dialog.info({
+    title: 'Confirm order',
+    content: () =>
+      h(
+        OrderSummary,
+        {
+          exchangeId: exchangeId.value,
+          params: {
+            symbol: symbol.value,
+            side: side.value,
+            type: type.value,
+            amount: size.value,
+            price: price.value,
+            triggerPrice: triggerPrice.value,
+            reduceOnly: reduceOnly.value,
+            postOnly: postOnly.value,
+          },
+        },
+        ''
+      ),
+    positiveText: 'Order',
+    negativeText: 'Cancel',
+    onPositiveClick: async () => {
+      const { client } = useCcxtClient(exchangeId)
+      await client.value.order({
+        symbol: symbol.value,
+        type: type.value,
+        side: side.value,
+        amount: size.value,
+        price: price.value,
+        triggerPrice: triggerPrice.value,
+        reduceOnly: reduceOnly.value,
+        postOnly: postOnly.value,
+      })
+    },
   })
 }
 </script>
 
 <template>
-  <n-form label-placement="left" label-align="right">
+  <n-form label-placement="left" label-align="right" label-width="100">
     <slot name="exchange" :config="slotArgs">
       <n-form-item label="Exchange">
         <n-select v-model:value="exchangeId" :options="exchangeSelectOptionsForNaiveUi" filterable />
@@ -124,19 +152,23 @@ const onSubmit = async (s: string) => {
         <n-checkbox v-model:checked="postOnly" />
       </n-form-item>
     </slot>
+    <div class="flex justify-center gap-5">
+      <n-button
+        class="rounded-md"
+        size="large"
+        type="success"
+        :disabled="!isRequiredFieldsFilled"
+        @click="onSubmit('buy')"
+        >BUY
+      </n-button>
+      <n-button
+        class="rounded-md"
+        size="large"
+        type="error"
+        :disabled="!isRequiredFieldsFilled"
+        @click="onSubmit('sell')"
+        >SELL
+      </n-button>
+    </div>
   </n-form>
-  <div class="flex m-5">
-    <n-button class="rounded-md w-16 side-button-buy" type="success" @click="onSubmit('buy')">BUY </n-button>
-    <n-button class="rounded-md w-16 side-button-sell" type="error" @click="onSubmit('sell')">SELL </n-button>
-  </div>
 </template>
-
-<style lang="scss">
-button.n-button.n-button--success-type.n-button--medium-type.side-button-buy {
-  background-color: #18a058;
-}
-
-button.n-button.n-button--error-type.n-button--medium-type.side-button-sell {
-  background-color: #d03050;
-}
-</style>
