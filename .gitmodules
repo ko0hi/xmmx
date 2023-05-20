@@ -1,0 +1,3 @@
+[submodule "lib/ccxt-server"]
+	path = lib/ccxt-server
+	url = git@github.com:ko0hi/ccxt-server.git
