@@ -12,9 +12,7 @@ const useStore = defineStore('globalStore', () => {
     marketsRef.value[name] = markets
   }
 
-  const getOrders = (): Order[] => ordersRef.value
   const setOrders = (orders: Order[]): void => {
-    console.log('setOrders', orders)
     ordersRef.value = orders.sort((a, b) => b.timestamp - a.timestamp)
   }
 

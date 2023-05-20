@@ -2,6 +2,7 @@ import useStore from '~/composables/useStore'
 import { type Market } from 'ccxt'
 import createClient from '~/utils/ccxt'
 import { MarketNotFoundError } from '~/utils/exceptions'
+import { useDialog } from 'naive-ui'
 
 const useMarkets = (): {
   initMarket: (exchangeId: string, exchangeOptions?: object) => Promise<Market[]>
@@ -11,11 +12,22 @@ const useMarkets = (): {
   getLotSize: (exchangeId: string, symbol: string) => number | null
 } => {
   const { getMarkets, updateMarkets } = useStore()
+  const dialog = useDialog()
 
   const initMarket = async (exchangeId: string, exchangeOptions: object = {}): Promise<Market[]> => {
     const mkts = getMarkets(exchangeId)
     if (mkts === undefined) {
-      updateMarkets(exchangeId, await createClient(exchangeId, exchangeOptions).fetchMarkets())
+      await createClient(exchangeId, exchangeOptions)
+        .fetchMarkets()
+        .then(
+          markets => updateMarkets(exchangeId, markets),
+          error => {
+            dialog.error({
+              title: `${error.statusCode}: Failed to fetch markets`,
+              content: error.data,
+            })
+          }
+        )
     }
     return getMarkets(exchangeId)
   }
