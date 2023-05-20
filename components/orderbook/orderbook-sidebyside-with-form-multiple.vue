@@ -1,10 +1,8 @@
 <script setup lang="ts">
-import { OrderbookSidebysideWithForm, OrderForm } from '#components'
-import { useDialog } from 'naive-ui'
+import { OrderbookSidebysideWithForm } from '#components'
 
 const orderbookComponent = shallowRef(OrderbookSidebysideWithForm)
 const orderbookList = ref([])
-const config = ref()
 
 const addOrderbook = () => {
   orderbookList.value.push({ component: orderbookComponent, key: new Date().getTime() })
@@ -15,26 +13,6 @@ const onDeleteButtonClick = key => {
 }
 
 onMounted(() => addOrderbook())
-
-const dialog = useDialog()
-
-watch(config, () => {
-  const disableBuy = config.value.side == 'ask'
-  const disableSell = config.value.side == 'bid'
-  const props = {
-    exchangeId: config.value.exchangeId,
-    symbol: config.value.symbol,
-    side: config.value.side,
-    type: 'limit',
-    price: parseFloat(config.value.price),
-    disableBuy: disableBuy,
-    disableSell: disableSell,
-  }
-  dialog.info({
-    title: 'Order',
-    content: () => h(OrderForm, props, ''),
-  })
-})
 </script>
 
 <template>
@@ -46,7 +24,7 @@ watch(config, () => {
             <span class="text-xs">✖</span>
           </n-button>
         </div>
-        <component :is="orderbook.component" v-model="config" class="-mt-1" />
+        <component :is="orderbook.component" class="-mt-1" />
       </div>
       <div class="flex m-5 w-48 h-64 items-center justify-center">
         <n-button circle @click="addOrderbook">+</n-button>

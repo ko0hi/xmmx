@@ -75,6 +75,7 @@ const emit = defineEmits<{
 <template>
   <div class="flex justify-center items-center min-h-[6rem]">
     <div v-if="!pending" class="grid grid-cols-2 gap-x-2 font-mono text-right w-full">
+      <slot name="beforeOrderbook" />
       <div class="grid grid-cols-2">
         <span>Size</span>
         <span>Bid</span>
@@ -92,6 +93,7 @@ const emit = defineEmits<{
         <span :class="sideToSpanClass(item.side)">{{ item.side === 'bid' ? item.sizeDisplay : item.price }}</span>
         <span :class="sideToSpanClass(item.side)">{{ item.side == 'bid' ? item.price : item.sizeDisplay }}</span>
       </div>
+      <slot name="afterOrderbook" />
     </div>
     <div v-else>
       <progress class="progress progress-primary w-56"></progress>
