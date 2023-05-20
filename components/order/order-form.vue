@@ -4,14 +4,26 @@ import useOrderForm from '~/composables/useOrderForm'
 import { useDialog } from 'naive-ui'
 import OrderSummary from '~/components/order/order-summary.vue'
 
-const props = defineProps<{
-  exchangeId: string
-  symbol: string
-  side?: 'BUY' | 'SELL'
-  type?: 'limit' | 'market' | 'stopLimit' | 'stopMarket'
-  price?: number
-  size?: number
-}>()
+const props = withDefaults(
+  defineProps<{
+    exchangeId: string
+    symbol: string
+    side?: 'BUY' | 'SELL'
+    type?: 'limit' | 'market' | 'stopLimit' | 'stopMarket'
+    price?: number
+    size?: number
+    disableBuy?: boolean
+    disableSell?: boolean
+  }>(),
+  {
+    side: null,
+    type: null,
+    price: null,
+    size: null,
+    disableBuy: false,
+    disableSell: false,
+  }
+)
 
 const {
   exchangeId,
@@ -180,7 +192,7 @@ const onSubmit = async (s: string) => {
         class="rounded-md"
         size="large"
         type="success"
-        :disabled="!isRequiredFieldsFilled"
+        :disabled="!isRequiredFieldsFilled || props.disableBuy"
         @click="onSubmit('buy')"
         >BUY
       </n-button>
@@ -188,7 +200,7 @@ const onSubmit = async (s: string) => {
         class="rounded-md"
         size="large"
         type="error"
-        :disabled="!isRequiredFieldsFilled"
+        :disabled="!isRequiredFieldsFilled || props.disableSell"
         @click="onSubmit('sell')"
         >SELL
       </n-button>

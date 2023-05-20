@@ -19,12 +19,16 @@ onMounted(() => addOrderbook())
 const dialog = useDialog()
 
 watch(config, () => {
+  const disableBuy = config.value.side == 'ask'
+  const disableSell = config.value.side == 'bid'
   const props = {
     exchangeId: config.value.exchangeId,
     symbol: config.value.symbol,
     side: config.value.side,
     type: 'limit',
     price: parseFloat(config.value.price),
+    disableBuy: disableBuy,
+    disableSell: disableSell,
   }
   dialog.info({
     title: 'Order',
