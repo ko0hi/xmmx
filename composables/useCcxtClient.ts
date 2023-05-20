@@ -29,7 +29,6 @@ const useCcxtClient = (
     [exchangeIdRef, exchangeOptionsRef],
     async () => {
       if (exchangeIdRef.value) {
-        console.log(exchangeIdRef.value)
         await initMarket(exchangeIdRef.value, exchangeOptionsRef.value)
       }
     },

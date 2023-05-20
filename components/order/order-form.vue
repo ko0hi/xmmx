@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import useCurrencyIcon from '~/composables/useCurrencyIcon'
 import useOrderForm from '~/composables/useOrderForm'
-import { useDialog, useDialogReactiveList } from 'naive-ui'
+import { useDialog } from 'naive-ui'
 import OrderSummary from '~/components/order/order-summary.vue'
 
 const props = defineProps<{
@@ -78,20 +78,30 @@ const onSubmit = async (s: string) => {
     positiveText: 'Order',
     negativeText: 'Cancel',
     onPositiveClick: async () => {
-      console.log(useDialogReactiveList())
-
       const { client } = useCcxtClient(exchangeId)
-      await client.value.order({
-        symbol: symbol.value,
-        type: type.value,
-        side: side.value,
-        amount: size.value,
-        price: price.value,
-        triggerPrice: triggerPrice.value,
-        reduceOnly: reduceOnly.value,
-        postOnly: postOnly.value,
-      })
-      dialog.destroyAll()
+      await client.value
+        .order({
+          symbol: symbol.value,
+          type: type.value,
+          side: side.value,
+          amount: size.value,
+          price: price.value,
+          triggerPrice: triggerPrice.value,
+          reduceOnly: reduceOnly.value,
+          postOnly: postOnly.value,
+        })
+        .then(
+          result => {
+            dialog.destroyAll()
+          },
+          error => {
+            dialog.destroyAll()
+            dialog.error({
+              title: `${error.statusCode}: Failed to edit your order`,
+              content: error.data,
+            })
+          }
+        )
     },
     onNegativeClick: async () => {
       dialog.destroyAll()
