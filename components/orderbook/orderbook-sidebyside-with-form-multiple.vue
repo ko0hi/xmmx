@@ -18,16 +18,16 @@ onMounted(() => addOrderbook())
 <template>
   <div>
     <div class="flex flex-wrap gap-5">
-      <div v-for="orderbook in orderbookList" :key="orderbook.key">
+      <div v-for="[index, orderbook] in Object.entries(orderbookList)" :key="orderbook.key">
         <div class="flex justify-end m-0 p-0">
           <n-button quaternary circle size="small" @click="onDeleteButtonClick(orderbook.key)">
-            <span class="text-xs">✖</span>
+            <span v-if="index > 0" class="text-xs">✖</span>
           </n-button>
         </div>
         <component :is="orderbook.component" class="-mt-1" />
       </div>
-      <div class="flex m-5 w-48 h-64 items-center justify-center">
-        <n-button circle @click="addOrderbook">+</n-button>
+      <div class="flex m-5 items-center justify-center">
+        <n-button class="h-full" size="small" circle @click="addOrderbook">+</n-button>
       </div>
     </div>
   </div>
