@@ -193,6 +193,7 @@ const onSubmit = async (s: string) => {
         size="large"
         type="success"
         :disabled="!isRequiredFieldsFilled || props.disableBuy"
+        :class="props.disableBuy ? 'hidden' : ''"
         @click="onSubmit('buy')"
         >BUY
       </n-button>
@@ -201,6 +202,7 @@ const onSubmit = async (s: string) => {
         size="large"
         type="error"
         :disabled="!isRequiredFieldsFilled || props.disableSell"
+        :class="props.disableSell ? 'hidden' : ''"
         @click="onSubmit('sell')"
         >SELL
       </n-button>

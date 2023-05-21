@@ -2,6 +2,8 @@
 import { computed, CSSProperties, ref } from 'vue'
 import useCcxtClient from '~/composables/useCcxtClient'
 import useCurrencyIcon from '~/composables/useCurrencyIcon'
+import { useDialog } from 'naive-ui'
+import OrderForm from '~/components/order/order-form.vue'
 
 type OrderbookProps = {
   exchangeId?: string
@@ -29,6 +31,8 @@ const round = ref(props.round)
 const exchangeOptions = ref(props.exchangeOptions)
 const clicked = ref()
 
+const dialog = useDialog()
+
 const { listAvailableMarkets, getTickSize } = useCcxtClient(exchangeId, exchangeOptions)
 
 const options = computed(() => listAvailableMarkets().map(item => ({ label: `${item}`, value: item })))
@@ -40,12 +44,47 @@ const tickSize = computed(() => {
   }
 })
 
-const emit = defineEmits<{
-  (event: 'update:modelValue', value: { exchangeId: string; exchangeOptions: object; symbol: string }): void
-}>()
+const openOrderFormFromOrderbookClick = () => {
+  const disableBuy = clicked.value.side == 'ask'
+  const disableSell = clicked.value.side == 'bid'
+  const props = {
+    exchangeId: clicked.value.exchangeId,
+    symbol: clicked.value.symbol,
+    side: clicked.value.side,
+    type: 'limit',
+    price: parseFloat(clicked.value.price),
+    disableBuy: disableBuy,
+    disableSell: disableSell,
+  }
+  dialog.info({
+    title: 'Order',
+    content: () => h(OrderForm, props, ''),
+  })
+}
+
+const openOrderFormFromButtonClick = (side: string) => {
+  const disableBuy = side == 'sell'
+  const disableSell = side == 'buy'
+  dialog.info({
+    title: 'Order',
+    content: () =>
+      h(
+        OrderForm,
+        {
+          exchangeId: exchangeId.value,
+          symbol: symbol.value,
+          side: side,
+          type: 'limit',
+          disableBuy: disableBuy,
+          disableSell: disableSell,
+        },
+        ''
+      ),
+  })
+}
 
 watch(exchangeId, () => (symbol.value = listAvailableMarkets()[0]))
-watch([clicked], () => emit('update:modelValue', clicked.value))
+watch([clicked], openOrderFormFromOrderbookClick)
 watch([exchangeId, symbol, tickSize], () => (round.value = tickSize.value), { immediate: true })
 
 const labelStyle: CSSProperties = computed(() => ({
@@ -124,7 +163,16 @@ const labelStyle: CSSProperties = computed(() => ({
       :limit="limit"
       :round="round"
       :exchange-options="exchangeOptions"
-    />
+    >
+      <template #afterOrderbook>
+        <n-button class="rounded-md w-full m-3" size="tiny" type="success" @click="openOrderFormFromButtonClick('buy')"
+          >BUY</n-button
+        >
+        <n-button class="rounded-md w-full m-3" size="tiny" type="error" @click="openOrderFormFromButtonClick('sell')"
+          >SELL</n-button
+        >
+      </template>
+    </orderbook-sidebyside>
   </div>
 </template>
 
