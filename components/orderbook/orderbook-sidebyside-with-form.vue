@@ -63,9 +63,23 @@ const openOrderFormFromOrderbookClick = () => {
 }
 
 const openOrderFormFromButtonClick = (side: string) => {
+  const disableBuy = side == 'sell'
+  const disableSell = side == 'buy'
   dialog.info({
     title: 'Order',
-    content: () => h(OrderForm, { exchangeId: exchangeId.value, symbol: symbol.value, side: side, type: 'limit' }, ''),
+    content: () =>
+      h(
+        OrderForm,
+        {
+          exchangeId: exchangeId.value,
+          symbol: symbol.value,
+          side: side,
+          type: 'limit',
+          disableBuy: disableBuy,
+          disableSell: disableSell,
+        },
+        ''
+      ),
   })
 }
 
