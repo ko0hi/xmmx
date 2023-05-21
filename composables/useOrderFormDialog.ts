@@ -4,7 +4,7 @@ import OrderSummary from '~/components/order/order-summary.vue'
 
 const useOrderFormDialog = () => {
   const dialog = useDialog()
-  const openOrderDialog = (opts: {
+  const openOrderFormDialog = (opts: {
     exchangeId: string
     symbol: string
     side?: 'buy' | 'sell'
@@ -100,7 +100,7 @@ const useOrderFormDialog = () => {
     })
   }
 
-  return { openOrderDialog, openOrderConfirmationDialog }
+  return { openOrderFormDialog, openOrderConfirmationDialog }
 }
 
 export default useOrderFormDialog
