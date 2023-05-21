@@ -1,8 +1,7 @@
 <script setup lang="ts">
 import useCurrencyIcon from '~/composables/useCurrencyIcon'
 import useOrderForm from '~/composables/useOrderForm'
-import { useDialog } from 'naive-ui'
-import OrderSummary from '~/components/order/order-summary.vue'
+import useOrderFormDialog from '~/composables/useOrderFormDialog'
 
 const props = withDefaults(
   defineProps<{
@@ -37,6 +36,7 @@ const {
   postOnly,
   requiredFields,
   isRequiredFieldsFilled,
+  parameters,
   exchangeSelectOptionsForNaiveUi,
   symbolSelectOptionsForNaiveUi,
   tickSize,
@@ -50,89 +50,32 @@ const {
   size: props.size,
 })
 
-const slotArgs = computed(() => ({
-  exchange: exchangeId.value,
-  symbol: symbol.value,
-  side: side.value,
-  type: type.value,
-  size: size.value,
-  price: price.value,
-  triggerPrice: triggerPrice.value,
-  reduceOnly: reduceOnly.value,
-  postOnly: postOnly.value,
-}))
-
-const dialog = useDialog()
+const { openOrderConfirmationDialog } = useOrderFormDialog()
 
 const onSubmit = async (s: string) => {
   side.value = s
-
-  dialog.info({
-    title: 'Confirm order',
-    content: () =>
-      h(
-        OrderSummary,
-        {
-          exchangeId: exchangeId.value,
-          params: {
-            symbol: symbol.value,
-            side: side.value,
-            type: type.value,
-            amount: size.value,
-            price: price.value,
-            triggerPrice: triggerPrice.value,
-            reduceOnly: reduceOnly.value,
-            postOnly: postOnly.value,
-          },
-        },
-        ''
-      ),
-    positiveText: 'Order',
-    negativeText: 'Cancel',
-    onPositiveClick: async () => {
-      const { client } = useCcxtClient(exchangeId)
-      await client.value
-        .order({
-          symbol: symbol.value,
-          type: type.value,
-          side: side.value,
-          amount: size.value,
-          price: price.value,
-          triggerPrice: triggerPrice.value,
-          reduceOnly: reduceOnly.value,
-          postOnly: postOnly.value,
-        })
-        .then(
-          result => {
-            dialog.destroyAll()
-          },
-          error => {
-            dialog.destroyAll()
-            dialog.error({
-              title: `${error.statusCode}: Failed to edit your order`,
-              content: error.data,
-            })
-          }
-        )
-    },
-    onNegativeClick: async () => {
-      dialog.destroyAll()
-    },
-    onClose: () => {
-      dialog.destroyAll()
-    },
+  openOrderConfirmationDialog({
+    exchangeId: exchangeId.value,
+    symbol: symbol.value,
+    side: side.value,
+    type: type.value,
+    size: size.value,
+    price: price.value,
+    triggerPrice: triggerPrice.value,
+    reduceOnly: reduceOnly.value,
+    postOnly: postOnly.value,
   })
 }
 </script>
 
 <template>
   <n-form label-placement="left" label-align="right" label-width="100">
-    <slot name="exchange" :config="slotArgs">
+    <slot name="exchange" :config="parameters">
       <n-form-item label="Exchange">
         <n-select v-model:value="exchangeId" :options="exchangeSelectOptionsForNaiveUi" filterable />
       </n-form-item>
     </slot>
-    <slot name="symbol" :config="slotArgs">
+    <slot name="symbol" :config="parameters">
       <n-form-item label="Symbol">
         <n-select
           v-model:value="symbol"
@@ -148,7 +91,7 @@ const onSubmit = async (s: string) => {
         />
       </n-form-item>
     </slot>
-    <slot name="type" :config="slotArgs">
+    <slot name="type" :config="parameters">
       <n-form-item label="Type">
         <n-select
           v-model:value="type"
@@ -162,27 +105,27 @@ const onSubmit = async (s: string) => {
         />
       </n-form-item>
     </slot>
-    <slot name="price" :config="slotArgs">
+    <slot name="price" :config="parameters">
       <n-form-item v-if="requiredFields.includes('price')" label="Price">
         <n-input-number v-model:value="price" :step="tickSize" :disabled="!symbol && !side" />
       </n-form-item>
     </slot>
-    <slot name="size" :config="slotArgs">
+    <slot name="size" :config="parameters">
       <n-form-item v-if="requiredFields.includes('size')" label="Size">
         <n-input-number v-model:value="size" :step="lotSize" :disabled="!symbol && !side" />
       </n-form-item>
     </slot>
-    <slot name="triggerPrice" :config="slotArgs">
+    <slot name="triggerPrice" :config="parameters">
       <n-form-item v-if="requiredFields.includes('triggerPrice')" label="Trigger Price">
         <n-input-number v-model:value="triggerPrice" :step="tickSize" :disabled="!symbol && !side" />
       </n-form-item>
     </slot>
-    <slot name="reduceOnly" :config="slotArgs">
+    <slot name="reduceOnly" :config="parameters">
       <n-form-item label="Reduce Only">
         <n-checkbox v-model:checked="reduceOnly" />
       </n-form-item>
     </slot>
-    <slot name="postOnly" :config="slotArgs">
+    <slot name="postOnly" :config="parameters">
       <n-form-item v-if="type === 'limit' || type === 'stopLimit'" label="Post Only">
         <n-checkbox v-model:checked="postOnly" />
       </n-form-item>

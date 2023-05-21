@@ -5,19 +5,17 @@ import useCcxtClient from '~/composables/useCcxtClient'
 import useEditOrder from '~/composables/useEditOrder'
 import FontawesomeIconWrapper from '~/components/fontawesome-icon-wrapper.vue'
 import useCurrencyIcon from '~/composables/useCurrencyIcon'
+import useOrderFormDialog from '~/composables/useOrderFormDialog'
 
 const props = defineProps<{
   exchangeId: string
 }>()
 
-const { client, getTickSize, getLotSize } = useCcxtClient(props.exchangeId)
+const { getTickSize, getLotSize } = useCcxtClient(props.exchangeId)
 const { formatPrice, formatSize } = usePrecisionFormatter(props.exchangeId)
 const { editOrder } = useEditOrder(props.exchangeId)
 const { orderState } = useOrderState(props.exchangeId)
-
-watch(orderState, () => {
-  console.log('CHANGED', orderState)
-})
+const { openOrderFormDialog } = useOrderFormDialog()
 
 const orders = computed(() => Object.values(orderState.value).sort((a, b) => b.timestamp - a.timestamp))
 
@@ -52,14 +50,18 @@ const columns = computed(() => [
       h(FontawesomeIconWrapper, {
         class: 'cursor-pointer text-blue-500',
         icon: ['fas', 'clone'],
-        onClick: async () =>
-          client.value.createOrder({
+        onClick: async () => {
+          openOrderFormDialog({
+            exchangeId: props.exchangeId,
             symbol: row.symbol,
             side: row.side,
             type: row.type,
-            amount: row.amount,
             price: row.price,
-          }),
+            size: row.amount,
+            disableBuy: row.side == 'sell',
+            disableSell: row.side == 'buy',
+          })
+        },
       }),
   },
   {
