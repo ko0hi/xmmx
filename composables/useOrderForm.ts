@@ -53,6 +53,18 @@ const useOrderForm = (initialParams: {
     }
   })
 
+  const parameters = computed(() => ({
+    exchange: exchangeId.value,
+    symbol: symbol.value,
+    side: side.value,
+    type: type.value,
+    size: size.value,
+    price: price.value,
+    triggerPrice: triggerPrice.value,
+    reduceOnly: reduceOnly.value,
+    postOnly: postOnly.value,
+  }))
+
   const reset = () => {
     price.value = null
     size.value = null
@@ -75,6 +87,7 @@ const useOrderForm = (initialParams: {
     postOnly,
     requiredFields,
     isRequiredFieldsFilled,
+    parameters,
     reset,
     exchangeSelectOptionsForNaiveUi: useAvailableExchanges().exchangeSelectOptionsForNaiveUi.value,
     symbolSelectOptionsForNaiveUi: computed(() =>

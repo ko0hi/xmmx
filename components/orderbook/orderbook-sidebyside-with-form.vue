@@ -4,6 +4,7 @@ import useCcxtClient from '~/composables/useCcxtClient'
 import useCurrencyIcon from '~/composables/useCurrencyIcon'
 import { useDialog } from 'naive-ui'
 import OrderForm from '~/components/order/order-form.vue'
+import useOrderFormDialog from '~/composables/useOrderFormDialog'
 
 type OrderbookProps = {
   exchangeId?: string
@@ -34,6 +35,7 @@ const clicked = ref()
 const dialog = useDialog()
 
 const { listAvailableMarkets, getTickSize } = useCcxtClient(exchangeId, exchangeOptions)
+const { openOrderFormDialog } = useOrderFormDialog()
 
 const options = computed(() => listAvailableMarkets().map(item => ({ label: `${item}`, value: item })))
 const tickSize = computed(() => {
@@ -45,41 +47,25 @@ const tickSize = computed(() => {
 })
 
 const openOrderFormFromOrderbookClick = () => {
-  const disableBuy = clicked.value.side == 'ask'
-  const disableSell = clicked.value.side == 'bid'
-  const props = {
+  openOrderFormDialog({
     exchangeId: clicked.value.exchangeId,
     symbol: clicked.value.symbol,
     side: clicked.value.side,
     type: 'limit',
     price: parseFloat(clicked.value.price),
-    disableBuy: disableBuy,
-    disableSell: disableSell,
-  }
-  dialog.info({
-    title: 'Order',
-    content: () => h(OrderForm, props, ''),
+    disableBuy: clicked.value.side == 'ask',
+    disableSell: clicked.value.side == 'bid',
   })
 }
 
 const openOrderFormFromButtonClick = (side: string) => {
-  const disableBuy = side == 'sell'
-  const disableSell = side == 'buy'
-  dialog.info({
-    title: 'Order',
-    content: () =>
-      h(
-        OrderForm,
-        {
-          exchangeId: exchangeId.value,
-          symbol: symbol.value,
-          side: side,
-          type: 'limit',
-          disableBuy: disableBuy,
-          disableSell: disableSell,
-        },
-        ''
-      ),
+  openOrderFormDialog({
+    exchangeId: exchangeId.value,
+    symbol: symbol.value,
+    side: side,
+    type: 'limit',
+    disableBuy: side == 'sell',
+    disableSell: side == 'buy',
   })
 }
 
