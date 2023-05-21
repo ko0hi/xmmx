@@ -5,7 +5,7 @@ import { Ref } from 'vue'
 const useCurrencyIcon = (symbol: string | Ref<string>) => {
   const symbolRef = castToRef(symbol)
   const currency = extractCurrencyFromSymbol(symbolRef.value)
-  return { currency, iconPath: `/cryptocurrency/icon/${currency}.svg` }
+  return { currency, iconPath: `/cryptocurrency/icon/${currency.toLowerCase()}.svg` }
 }
 
 export default useCurrencyIcon
