@@ -2,7 +2,6 @@
 import { computed, CSSProperties, ref } from 'vue'
 import useCcxtClient from '~/composables/useCcxtClient'
 import useCurrencyIcon from '~/composables/useCurrencyIcon'
-import { useDialog } from 'naive-ui'
 import useOrderFormDialog from '~/composables/useOrderFormDialog'
 
 type OrderbookProps = {
