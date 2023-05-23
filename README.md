@@ -8,6 +8,16 @@
 
 ### Installing
 
+Pull repository
+
+```bash
+# with http
+git clone --recursive https://github.com/ko0hi/xmmx.git
+
+# with ssh
+git clone --recursive git@github.com:ko0hi/xmmx.git
+```
+
 Place `apis.json` in the root directory.
 
 ```json
