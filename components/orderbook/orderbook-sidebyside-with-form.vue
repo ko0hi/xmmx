@@ -3,7 +3,6 @@ import { computed, CSSProperties, ref } from 'vue'
 import useCcxtClient from '~/composables/useCcxtClient'
 import useCurrencyIcon from '~/composables/useCurrencyIcon'
 import { useDialog } from 'naive-ui'
-import OrderForm from '~/components/order/order-form.vue'
 import useOrderFormDialog from '~/composables/useOrderFormDialog'
 
 type OrderbookProps = {
@@ -31,8 +30,6 @@ const limit = ref(props.limit)
 const round = ref(props.round)
 const exchangeOptions = ref(props.exchangeOptions)
 const clicked = ref()
-
-const dialog = useDialog()
 
 const { listAvailableMarkets, getTickSize } = useCcxtClient(exchangeId, exchangeOptions)
 const { openOrderFormDialog } = useOrderFormDialog()
@@ -152,11 +149,11 @@ const labelStyle: CSSProperties = computed(() => ({
     >
       <template #afterOrderbook>
         <n-button class="rounded-md w-full m-3" size="tiny" type="success" @click="openOrderFormFromButtonClick('buy')"
-          >BUY</n-button
-        >
+          >BUY
+        </n-button>
         <n-button class="rounded-md w-full m-3" size="tiny" type="error" @click="openOrderFormFromButtonClick('sell')"
-          >SELL</n-button
-        >
+          >SELL
+        </n-button>
       </template>
     </orderbook-sidebyside>
   </div>
