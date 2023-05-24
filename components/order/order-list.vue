@@ -236,9 +236,3 @@ const columns = computed(() => [
     />
   </div>
 </template>
-
-<style>
-.n-data-table-filter-menu button.n-button.n-button--primary-type.n-button--tiny-type {
-  background-color: #18a058;
-}
-</style>
