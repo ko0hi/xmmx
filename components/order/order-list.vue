@@ -148,7 +148,8 @@ const columns = computed(() => [
                   'button',
                   {
                     class: 'n-button flex-none w-1/4',
-                    onClick: () => editOrder(row, { amount: row.amount - getLotSize(row.symbol) }),
+                    onClick: () =>
+                      editOrder(row, { amount: formatSize(row.symbol, row.amount - getLotSize(row.symbol)) }),
                   },
                   '↓'
                 ),
@@ -171,7 +172,8 @@ const columns = computed(() => [
                   'button',
                   {
                     class: 'n-button flex-none w-1/4',
-                    onClick: () => editOrder(row, { amount: row.amount + getLotSize(row.symbol) }),
+                    onClick: () =>
+                      editOrder(row, { amount: formatSize(row.symbol, row.amount + getLotSize(row.symbol)) }),
                   },
                   '↑'
                 ),
@@ -194,6 +196,7 @@ const columns = computed(() => [
     width: 130,
     resizable: true,
     render: (row: Order) =>
+      // TODO: component化
       row.type == 'limit' && row.status == 'open'
         ? h(
             'div',
@@ -206,7 +209,8 @@ const columns = computed(() => [
                   'button',
                   {
                     class: 'n-button flex-none w-1/4',
-                    onClick: async () => editOrder(row, { price: row.price - getTickSize(row.symbol) }),
+                    onClick: async () =>
+                      editOrder(row, { price: formatPrice(row.symbol, row.price - getTickSize(row.symbol)) }),
                   },
                   '↓'
                 ),
@@ -229,7 +233,8 @@ const columns = computed(() => [
                   'button',
                   {
                     class: 'n-button flex-none w-1/4',
-                    onClick: async () => editOrder(row, { price: row.price + getTickSize(row.symbol) }),
+                    onClick: async () =>
+                      editOrder(row, { price: formatPrice(row.symbol, row.price + getTickSize(row.symbol)) }),
                   },
                   '↑'
                 ),
