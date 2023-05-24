@@ -1,4 +1,4 @@
-import useStore from '~/composables/useStore'
+import useMarketsStore from '~/composables/useMarketsStore'
 import { type Market } from 'ccxt'
 import createClient from '~/utils/ccxt'
 import { MarketNotFoundError } from '~/utils/exceptions'
@@ -11,7 +11,7 @@ const useMarkets = (): {
   getTickSize: (exchangeId: string, symbol: string) => number | null
   getLotSize: (exchangeId: string, symbol: string) => number | null
 } => {
-  const { getMarkets, updateMarkets } = useStore()
+  const { getMarkets, setMarkets } = useMarketsStore()
   const dialog = useDialog()
 
   const initMarket = async (exchangeId: string, exchangeOptions: object = {}): Promise<Market[]> => {
@@ -20,7 +20,7 @@ const useMarkets = (): {
       await createClient(exchangeId, exchangeOptions)
         .fetchMarkets()
         .then(
-          markets => updateMarkets(exchangeId, markets),
+          markets => setMarkets(exchangeId, markets),
           error => {
             dialog.error({
               title: `${error.statusCode}: Failed to fetch markets`,
