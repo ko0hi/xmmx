@@ -1,8 +1,9 @@
-import useStore from '~/composables/useStore'
+import useMarketsStore from '~/composables/useMarketsStore'
 import { type Market } from 'ccxt'
 import createClient from '~/utils/ccxt'
 import { MarketNotFoundError } from '~/utils/exceptions'
 import { useDialog } from 'naive-ui'
+import { storeToRefs } from 'pinia'
 
 const useMarkets = (): {
   initMarket: (exchangeId: string, exchangeOptions?: object) => Promise<Market[]>
@@ -11,16 +12,19 @@ const useMarkets = (): {
   getTickSize: (exchangeId: string, symbol: string) => number | null
   getLotSize: (exchangeId: string, symbol: string) => number | null
 } => {
-  const { getMarkets, updateMarkets } = useStore()
+  const { getMarkets, setMarkets } = useMarketsStore()
+  const { isOnFetching } = storeToRefs(useMarketsStore())
   const dialog = useDialog()
 
   const initMarket = async (exchangeId: string, exchangeOptions: object = {}): Promise<Market[]> => {
     const mkts = getMarkets(exchangeId)
-    if (mkts === undefined) {
+    if (mkts === undefined && isOnFetching.value.get(exchangeId) !== true) {
+      isOnFetching.value.set(exchangeId, true)
+      console.log(`Start fetch markets: ${exchangeId}`)
       await createClient(exchangeId, exchangeOptions)
         .fetchMarkets()
         .then(
-          markets => updateMarkets(exchangeId, markets),
+          markets => setMarkets(exchangeId, markets),
           error => {
             dialog.error({
               title: `${error.statusCode}: Failed to fetch markets`,
@@ -28,6 +32,10 @@ const useMarkets = (): {
             })
           }
         )
+        .finally(() => {
+          isOnFetching.value.delete(exchangeId)
+          console.log(`End fetch markets: ${exchangeId}`)
+        })
     }
     return getMarkets(exchangeId)
   }
