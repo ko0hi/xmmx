@@ -9,11 +9,9 @@ onMounted(() => {
     { exchangeId: 'binanceusdm', symbol: 'BTC/USDT:USDT' },
     { exchangeId: 'binancecoinm', symbol: 'BTC/USD:BTC' },
     { exchangeId: 'binancecoinm', symbol: 'BTC/USD:BTC-230630' },
-    { exchangeId: 'binancecoinm', symbol: 'BTC/USD:BTC-230929' },
     { exchangeId: 'binanceusdm', symbol: 'ETH/USDT:USDT' },
     { exchangeId: 'binancecoinm', symbol: 'ETH/USD:ETH' },
     { exchangeId: 'binancecoinm', symbol: 'ETH/USD:ETH-230630' },
-    { exchangeId: 'binancecoinm', symbol: 'ETH/USD:ETH-230929' },
   ]
 
   defaults.map(d => {
