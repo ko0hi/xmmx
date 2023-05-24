@@ -6,6 +6,7 @@ import useEditOrder from '~/composables/useEditOrder'
 import FontawesomeIconWrapper from '~/components/fontawesome-icon-wrapper.vue'
 import useCurrencyIcon from '~/composables/useCurrencyIcon'
 import useOrderFormDialog from '~/composables/useOrderFormDialog'
+import NumberInputWithAdjustArrows from '~/components/number-input-with-adjust-arrows.vue'
 
 const props = defineProps<{
   exchangeId: string
@@ -137,47 +138,14 @@ const columns = computed(() => [
     resizable: true,
     render: (row: Order) =>
       row.type == 'limit' && row.status == 'open'
-        ? h(
-            'div',
-            {
-              class: 'flex justify-around',
-            },
-            {
-              default: () => [
-                h(
-                  'button',
-                  {
-                    class: 'n-button flex-none w-1/4',
-                    onClick: () => editOrder(row, { amount: row.amount - getLotSize(row.symbol) }),
-                  },
-                  '↓'
-                ),
-                h(
-                  'input',
-                  {
-                    class: 'text-center w-1/2',
-                    value: row.amount,
-                    onChange: e => {
-                      const newAmount = formatSize(row.symbol, parseFloat(e.target.value))
-                      e.target.value = newAmount
-                      if (newAmount != row.amount) {
-                        editOrder(row, { amount: e.target.value })
-                      }
-                    },
-                  },
-                  row.amount
-                ),
-                h(
-                  'button',
-                  {
-                    class: 'n-button flex-none w-1/4',
-                    onClick: () => editOrder(row, { amount: row.amount + getLotSize(row.symbol) }),
-                  },
-                  '↑'
-                ),
-              ],
-            }
-          )
+        ? h(NumberInputWithAdjustArrows, {
+            modelValue: row.amount,
+            onClickDecrement: () =>
+              editOrder(row, { amount: formatSize(row.symbol, row.amount - getLotSize(row.symbol)) }),
+            onChange: e => editOrder(row, { amount: formatSize(row.symbol, parseFloat(e.target.value)) }),
+            onClickIncrement: () =>
+              editOrder(row, { amount: formatSize(row.symbol, row.amount + getLotSize(row.symbol)) }),
+          })
         : row.amount,
   },
   {
@@ -195,47 +163,14 @@ const columns = computed(() => [
     resizable: true,
     render: (row: Order) =>
       row.type == 'limit' && row.status == 'open'
-        ? h(
-            'div',
-            {
-              class: 'flex justify-around',
-            },
-            {
-              default: () => [
-                h(
-                  'button',
-                  {
-                    class: 'n-button flex-none w-1/4',
-                    onClick: async () => editOrder(row, { price: row.price - getTickSize(row.symbol) }),
-                  },
-                  '↓'
-                ),
-                h(
-                  'input',
-                  {
-                    class: 'text-center w-1/2',
-                    value: row.price,
-                    onChange: e => {
-                      const newPrice = formatPrice(row.symbol, parseFloat(e.target.value))
-                      e.target.value = newPrice
-                      if (newPrice != row.price) {
-                        editOrder(row, { price: e.target.value })
-                      }
-                    },
-                  },
-                  row.price
-                ),
-                h(
-                  'button',
-                  {
-                    class: 'n-button flex-none w-1/4',
-                    onClick: async () => editOrder(row, { price: row.price + getTickSize(row.symbol) }),
-                  },
-                  '↑'
-                ),
-              ],
-            }
-          )
+        ? h(NumberInputWithAdjustArrows, {
+            modelValue: row.price,
+            onClickDecrement: () =>
+              editOrder(row, { price: formatPrice(row.symbol, row.price - getTickSize(row.symbol)) }),
+            onChange: e => editOrder(row, { price: formatPrice(row.symbol, parseFloat(e.target.value)) }),
+            onClickIncrement: () =>
+              editOrder(row, { price: formatPrice(row.symbol, row.price + getTickSize(row.symbol)) }),
+          })
         : row.price,
   },
   {
@@ -301,9 +236,3 @@ const columns = computed(() => [
     />
   </div>
 </template>
-
-<style>
-.n-data-table-filter-menu button.n-button.n-button--primary-type.n-button--tiny-type {
-  background-color: #18a058;
-}
-</style>

@@ -73,3 +73,18 @@ yarn && yarn dev
 ```
 
 You can access to XMMX with `http://localhost:3000`.
+
+
+## Update your version with the latest commit
+
+First run `update.sh` that executes `docker-compose down && docker-compose build`, which may take a while.
+
+```bash
+sh ./update.sh
+```
+
+Then, restart the containers.
+
+```bash
+sh ./start.sh
+```
