@@ -2,8 +2,8 @@
   <n-config-provider preflight-style-disabled>
     <n-dialog-provider>
       <div class="flex flex-col m-5 p-5 gap-5">
-        <orderbook-sidebyside-with-form-multiple />
-        <order-list exchange-id="binanceusdm" />
+        <trading-orderbook-sidebyside-with-form-multiple />
+        <trading-order-list exchange-id="binanceusdm" />
       </div>
     </n-dialog-provider>
   </n-config-provider>

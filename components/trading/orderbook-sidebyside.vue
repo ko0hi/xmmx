@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import useOrderbookWebsocket from '~/composables/useOrderbookWebsocket'
 import { computed, Ref } from 'vue'
-import usePrecisionFormatter from '~/composables/usePrecisionFormatter'
+import useOrderbookWebsocket from '~/components/trading/useOrderbookWebsocket'
+import usePrecisionFormatter from '~/components/trading/usePrecisionFormatter'
 
 type OrderbookProps = {
   exchangeId: string

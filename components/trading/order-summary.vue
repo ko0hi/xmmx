@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { OrderParams } from '~/utils/ccxt/types'
-import useCurrencyIcon from '~/composables/useCurrencyIcon'
+import useCurrencyIcon from '~/components/trading/useCurrencyIcon'
 const props = defineProps<{ exchangeId: string; params: OrderParams }>()
 
 const { iconPath } = useCurrencyIcon(props.params.symbol)

@@ -1,4 +1,4 @@
-import useCcxtClient from '~/composables/useCcxtClient'
+import useCcxtClient from '~/components/trading/useCcxtClient'
 import { useDialog } from 'naive-ui'
 import { Ref } from 'vue'
 import { Order } from '~/utils/ccxt/types'

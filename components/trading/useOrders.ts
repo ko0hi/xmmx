@@ -1,8 +1,8 @@
 import { Ref } from 'vue'
-import useCcxtClient from '~/composables/useCcxtClient'
+import useCcxtClient from '~/components/trading/useCcxtClient'
 import { storeToRefs } from 'pinia'
 import { useDialog } from 'naive-ui'
-import useOrdersStore from '~/composables/useOrdersStore'
+import useOrdersStore from '~/components/trading/useOrdersStore'
 
 const useOrders = (exchangeId: string | Ref<string>) => {
   const { client } = useCcxtClient(exchangeId)

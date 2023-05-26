@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { computed, CSSProperties, h, ref, watch } from 'vue'
-import useCcxtClient from '~/composables/useCcxtClient'
-import useCurrencyIcon from '~/composables/useCurrencyIcon'
-import useOrderFormDialog from '~/composables/useOrderFormDialog'
+import useCcxtClient from '~/components/trading/useCcxtClient'
+import useCurrencyIcon from '~/components/trading/useCurrencyIcon'
+import useOrderFormDialog from '~/components/trading/useOrderFormDialog'
 
 type OrderbookProps = {
   exchangeId?: string
@@ -136,7 +136,7 @@ const labelStyle: CSSProperties = computed(() => ({
         </n-radio-group>
       </n-form-item>
     </n-form>
-    <orderbook-sidebyside
+    <trading-orderbook-sidebyside
       v-if="symbol != null"
       v-model:clicked="clicked"
       :exchange-id="exchangeId"
@@ -154,7 +154,7 @@ const labelStyle: CSSProperties = computed(() => ({
           >SELL
         </n-button>
       </template>
-    </orderbook-sidebyside>
+    </trading-orderbook-sidebyside>
   </div>
 </template>
 

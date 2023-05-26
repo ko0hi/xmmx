@@ -1,7 +1,8 @@
 import { useDialog } from 'naive-ui'
 import { h } from 'vue'
-import { OrderForm, OrderSummary } from '#components'
-import { useCcxtClient } from '#build/imports'
+import OrderForm from '~/components/trading/order-form.vue'
+import OrderSummary from '~/components/trading/order-summary.vue'
+import useCcxtClient from '~/components/trading/useCcxtClient'
 
 const useOrderFormDialog = () => {
   const dialog = useDialog()

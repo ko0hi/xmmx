@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import useCurrencyIcon from '~/composables/useCurrencyIcon'
-import useOrderForm from '~/composables/useOrderForm'
-import useOrderFormDialog from '~/composables/useOrderFormDialog'
+import useCurrencyIcon from '~/components/trading/useCurrencyIcon'
+import useOrderForm from '~/components/trading/useOrderForm'
+import useOrderFormDialog from '~/components/trading/useOrderFormDialog'
 import { h } from 'vue'
 
 const props = withDefaults(

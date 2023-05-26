@@ -1,4 +1,4 @@
-import useMarketsStore from '~/composables/useMarketsStore'
+import useMarketsStore from '~/components/trading/useMarketsStore'
 import createClient from '~/utils/ccxt'
 import { MarketNotFoundError } from '~/utils/exceptions'
 import { useDialog } from 'naive-ui'
