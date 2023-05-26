@@ -8,8 +8,8 @@ import usePrecisionFormatter from '~/components/trading/usePrecisionFormatter'
 import useOrderState from '~/components/trading/useOrderState'
 import { computed, h } from 'vue'
 import { Order } from '~/utils/ccxt/types'
-import FontawesomeIconWrapper from '~/components/fontawesome-icon-wrapper.vue'
-import NumberInputWithAdjustArrows from '~/components/number-input-with-adjust-arrows.vue'
+import FontawesomeIconWrapper from '~/components/ui/fontawesome-icon-wrapper.vue'
+import NumberInputWithAdjustArrows from '~/components/ui/number-input-with-adjust-arrows.vue'
 
 const props = defineProps<{
   exchangeId: string
