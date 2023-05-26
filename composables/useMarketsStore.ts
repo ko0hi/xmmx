@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
-import { type Market, Order } from 'ccxt'
+import { Market } from '~/utils/ccxt/types'
 
 const useMarketsStore = defineStore('globalStore', () => {
   const marketsRef = ref<Record<string, Market[]>>({})

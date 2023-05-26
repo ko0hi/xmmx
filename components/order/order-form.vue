@@ -2,6 +2,7 @@
 import useCurrencyIcon from '~/composables/useCurrencyIcon'
 import useOrderForm from '~/composables/useOrderForm'
 import useOrderFormDialog from '~/composables/useOrderFormDialog'
+import { h } from 'vue'
 
 const props = withDefaults(
   defineProps<{

@@ -1,5 +1,4 @@
-import { EditOrderParams, type ExchangeOptions, FetchOpenOrdersParams, OrderParams } from './types'
-import ccxt, { Order } from 'ccxt'
+import { EditOrderParams, FetchOpenOrdersParams, Order, OrderParams } from './types'
 import CcxtClient from './ccxtClient'
 import { UnsupportedOrderTypeError } from '~/utils/exceptions'
 
@@ -66,8 +65,8 @@ const mapBinanceOrderResponseToCcxtOrder = (o: BinanceOrderResponse): Order => (
 })
 
 class Binanceusdm extends CcxtClient {
-  constructor(options: ExchangeOptions = {}) {
-    super(ccxt.pro.binanceusdm, options)
+  constructor() {
+    super('binanceusdm')
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -128,7 +127,7 @@ class Binanceusdm extends CcxtClient {
           },
         })
       default:
-        throw new UnsupportedOrderTypeError(`${params.type} for ${this.exchange.id}`)
+        throw new UnsupportedOrderTypeError(`${params.type} for ${this.exchangeId}`)
     }
   }
 

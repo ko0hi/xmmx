@@ -1,6 +1,6 @@
-import { extractCurrencyFromSymbol } from '~/utils/ccxt/functions'
-import { castToRef } from '~/utils/vue/cast'
 import { Ref } from 'vue'
+import { castToRef } from '~/utils/vue/cast'
+import { extractCurrencyFromSymbol } from '~/utils/ccxt/functions'
 
 const useCurrencyIcon = (symbol: string | Ref<string>) => {
   const symbolRef = castToRef(symbol)

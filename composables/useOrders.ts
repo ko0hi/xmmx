@@ -1,12 +1,11 @@
 import { Ref } from 'vue'
 import useCcxtClient from '~/composables/useCcxtClient'
-import { ExchangeOptions } from '~/utils/ccxt/types'
 import { storeToRefs } from 'pinia'
 import { useDialog } from 'naive-ui'
 import useOrdersStore from '~/composables/useOrdersStore'
 
-const useOrders = (exchangeId: string | Ref<string>, exchangeOptions: ExchangeOptions | Ref<ExchangeOptions> = {}) => {
-  const { client } = useCcxtClient(exchangeId, exchangeOptions)
+const useOrders = (exchangeId: string | Ref<string>) => {
+  const { client } = useCcxtClient(exchangeId)
   const store = useOrdersStore()
   const { orders } = storeToRefs(store)
   const dialog = useDialog()

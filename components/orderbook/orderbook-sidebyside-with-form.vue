@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, CSSProperties, ref } from 'vue'
+import { computed, CSSProperties, h, ref, watch } from 'vue'
 import useCcxtClient from '~/composables/useCcxtClient'
 import useCurrencyIcon from '~/composables/useCurrencyIcon'
 import useOrderFormDialog from '~/composables/useOrderFormDialog'

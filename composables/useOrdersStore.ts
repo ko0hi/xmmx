@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
-import { ref } from 'vue'
-import { type Market, Order } from 'ccxt'
+import { readonly, ref } from 'vue'
+import { Order } from '~/utils/ccxt/types'
 
 const useOrdersStore = defineStore('globalStore', () => {
   const ordersRef = ref<Order[]>([])
@@ -11,9 +11,9 @@ const useOrdersStore = defineStore('globalStore', () => {
   }
 
   return {
+    orderStateRef,
     orders: readonly(ordersRef),
     setOrders,
-    orderStateRef,
   }
 })
 

@@ -1,3 +1,5 @@
+import { computed } from 'vue'
+
 const useAvailableExchanges = () => {
   const availableExchanges = ['binanceusdm', 'binancecoinm']
   return {

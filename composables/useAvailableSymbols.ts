@@ -1,11 +1,11 @@
-import { computed, Ref } from 'vue'
 import useCcxtClient from '~/composables/useCcxtClient'
+import { computed, Ref } from 'vue'
 
-const useAvailableSymbols = (exchangeId: string | Ref<string>, exchangeOptions: object | Ref<object> = {}) => {
+const useAvailableSymbols = (exchangeId: string | Ref<string>) => {
   return {
-    availableSymbols: computed(() => useCcxtClient(exchangeId, exchangeOptions).listAvailableMarkets()),
+    availableSymbols: computed(() => useCcxtClient(exchangeId).listAvailableMarkets()),
     symbolSelectOptionsForNaiveUi: computed(() =>
-      useCcxtClient(exchangeId, exchangeOptions)
+      useCcxtClient(exchangeId)
         .listAvailableMarkets()
         .map(s => ({ label: s, value: s }))
     ),

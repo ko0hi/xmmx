@@ -1,10 +1,9 @@
 import useCcxtClient from '~/composables/useCcxtClient'
-import { ExchangeOptions } from '~/utils/ccxt/types'
-import { Ref } from 'vue'
+import { computed, onMounted, Ref, triggerRef } from 'vue'
 import { useDialog } from 'naive-ui'
 
-const useOrders = (exchangeId: string | Ref<string>, exchangeOptions: ExchangeOptions | Ref<ExchangeOptions> = {}) => {
-  const { client } = useCcxtClient(exchangeId, exchangeOptions)
+const useOrders = (exchangeId: string | Ref<string>) => {
+  const { client } = useCcxtClient(exchangeId)
   const orderState = computed(() => client.value.getOrderStateFromSocket())
   const dialog = useDialog()
 

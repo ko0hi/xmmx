@@ -1,9 +1,9 @@
 import useMarketsStore from '~/composables/useMarketsStore'
-import { type Market } from 'ccxt'
 import createClient from '~/utils/ccxt'
 import { MarketNotFoundError } from '~/utils/exceptions'
 import { useDialog } from 'naive-ui'
 import { storeToRefs } from 'pinia'
+import { Market } from '~/utils/ccxt/types'
 
 const useMarkets = (): {
   initMarket: (exchangeId: string, exchangeOptions?: object) => Promise<Market[]>
@@ -16,12 +16,12 @@ const useMarkets = (): {
   const { isOnFetching } = storeToRefs(useMarketsStore())
   const dialog = useDialog()
 
-  const initMarket = async (exchangeId: string, exchangeOptions: object = {}): Promise<Market[]> => {
+  const initMarket = async (exchangeId: string): Promise<Market[]> => {
     const mkts = getMarkets(exchangeId)
     if (mkts === undefined && isOnFetching.value.get(exchangeId) !== true) {
       isOnFetching.value.set(exchangeId, true)
       console.log(`Start fetch markets: ${exchangeId}`)
-      await createClient(exchangeId, exchangeOptions)
+      await createClient(exchangeId)
         .fetchMarkets()
         .then(
           markets => setMarkets(exchangeId, markets),

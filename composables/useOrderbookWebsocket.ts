@@ -1,7 +1,8 @@
-import { onMounted, onUnmounted, readonly, ref, type Ref } from 'vue'
-import { type OrderBook } from 'ccxt'
+import { onMounted, onUnmounted, readonly, ref, type Ref, watch } from 'vue'
 import { castToRef } from '~/utils/vue/cast'
 import { Socket } from 'socket.io-client'
+import { OrderBook } from '~/utils/ccxt/types'
+import useCcxtClient from '~/composables/useCcxtClient'
 
 interface Options {
   limit?: number | Ref<number>
@@ -51,7 +52,7 @@ const useOrderbookWebsocket = (
   // @ts-expect-error('nodejs')
   const timer = ref<Timer>(null)
 
-  const { exchangeIdRef, exchangeOptionsRef, client } = useCcxtClient(exchangeId, options.exchangeOptions)
+  const { exchangeIdRef, client } = useCcxtClient(exchangeId)
 
   const updateOrderbook = async () => {
     const newOrderbook = client.value.getOrderbookFromSocket(symbolRef.value)
@@ -108,7 +109,7 @@ const useOrderbookWebsocket = (
 
   onMounted(start)
   onUnmounted(stop)
-  watch([exchangeIdRef, symbolRef, intervalRef, exchangeOptionsRef], init)
+  watch([exchangeIdRef, symbolRef, intervalRef], init)
 
   return { orderbook: readonly(orderbook), pending: readonly(pending) }
 }

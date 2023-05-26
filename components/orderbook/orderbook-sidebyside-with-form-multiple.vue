@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { OrderbookSidebysideWithForm } from '#components'
+import { onMounted, ref, shallowRef } from 'vue'
 
 const orderbookComponent = shallowRef(OrderbookSidebysideWithForm)
 const orderbookList = ref([])

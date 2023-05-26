@@ -19,3 +19,5 @@ export class UnsupportedExchangeError extends XmmxError {}
 export class MarketNotFoundError extends XmmxError {}
 
 export class UnsupportedOrderTypeError extends XmmxError {}
+
+export class NotImplementedError extends XmmxError {}

@@ -14,3 +14,4 @@
 !tsconfig.json
 !vitest.config.ts
 !yarn.lock
+!ecosystem.config.js
