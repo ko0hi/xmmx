@@ -2,7 +2,7 @@ import { computed, ComputedRef, readonly, Ref, watch } from 'vue'
 import { castToRef } from '~/utils/vue/cast'
 import createClient from '~/utils/ccxt'
 import CcxtClient from '~/utils/ccxt/ccxtClient'
-import useMarkets from '~/components/trading/useMarkets'
+import useMarkets from '~/composables/useMarkets'
 import { Market } from '~/utils/ccxt/types'
 
 const useCcxtClient = (

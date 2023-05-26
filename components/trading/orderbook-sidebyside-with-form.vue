@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, CSSProperties, h, ref, watch } from 'vue'
 import useCcxtClient from '~/components/trading/useCcxtClient'
-import useCurrencyIcon from '~/components/trading/useCurrencyIcon'
+import useCurrencyIcon from '~/composables/useCurrencyIcon'
 import useOrderFormDialog from '~/components/trading/useOrderFormDialog'
 
 type OrderbookProps = {

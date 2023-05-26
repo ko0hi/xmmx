@@ -1,5 +1,5 @@
-import useAvailableExchanges from '~/components/trading/useAvailableExchanges'
-import useAvailableSymbols from '~/components/trading/useAvailableSymbols'
+import useAvailableExchanges from '~/composables/useAvailableExchanges'
+import useAvailableSymbols from '~/composables/useAvailableSymbols'
 import { computed, Ref, ref, watch } from 'vue'
 import useCcxtClient from '~/components/trading/useCcxtClient'
 

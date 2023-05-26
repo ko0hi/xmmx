@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import useCurrencyIcon from '~/components/trading/useCurrencyIcon'
+import useCurrencyIcon from '~/composables/useCurrencyIcon'
 import useOrderForm from '~/components/trading/useOrderForm'
 import useOrderFormDialog from '~/components/trading/useOrderFormDialog'
 import { h } from 'vue'
