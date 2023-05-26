@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import useOrderbookWebsocket from '~/composables/useOrderbookWebsocket'
 import { computed, Ref } from 'vue'
-import usePrecisionFormatter from '~/composables/usePrecisionFormatter'
+import useOrderbookWebsocket from '~/components/trading/useOrderbookWebsocket'
+import usePrecisionFormatter from '~/components/trading/usePrecisionFormatter'
 
 type OrderbookProps = {
   exchangeId: string
@@ -9,7 +9,6 @@ type OrderbookProps = {
   interval: number
   limit?: number
   round?: number
-  exchangeOptions?: object
   clicked?: Ref<object> | null
 }
 type Item = { i: number; side: 'ask' | 'bid'; price: string; size: string; sizeDisplay: string }
@@ -17,7 +16,6 @@ type Item = { i: number; side: 'ask' | 'bid'; price: string; size: string; sizeD
 const props = withDefaults(defineProps<OrderbookProps>(), {
   limit: 5,
   round: null,
-  exchangeOptions: () => {},
   clicked: null,
 })
 
@@ -28,15 +26,21 @@ const { orderbook, pending } = useOrderbookWebsocket(
   {
     limit: computed(() => props.limit),
     round: computed(() => props.round),
-    exchangeOptions: computed(() => props.exchangeOptions),
   }
 )
-const { formatPrice, formatSize } = usePrecisionFormatter(
-  computed(() => props.exchangeId),
-  computed(() => props.exchangeOptions)
-)
+const { formatPrice, formatSize } = usePrecisionFormatter(computed(() => props.exchangeId))
 
-const getIthRowItem = (i: number, side: 'ask' | 'bid'): Item => {
+const onClick = (item: Item) => {
+  emit('update:clicked', {
+    exchangeId: props.exchangeId,
+    symbol: props.symbol,
+    ...item,
+  })
+}
+
+const sideToSpanClass = (side: 'ask' | 'bid') => (side === 'ask' ? 'text-red-500' : 'text-green-500')
+
+const toIthRowItem = (i: number, side: 'ask' | 'bid'): Item => {
   const target = side === 'ask' ? orderbook.value.asks[i] : orderbook.value.bids[i]
   return {
     i: i,
@@ -47,21 +51,11 @@ const getIthRowItem = (i: number, side: 'ask' | 'bid'): Item => {
   }
 }
 
-const sideToSpanClass = (side: 'ask' | 'bid') => (side === 'ask' ? 'text-red-500' : 'text-green-500')
-const onClick = (item: Item) => {
-  emit('update:clicked', {
-    exchangeId: props.exchangeId,
-    exchangeOptions: props.exchangeOptions || {},
-    symbol: props.symbol,
-    ...item,
-  })
-}
-
 const displayItems = computed<Item[]>(() => {
   const rtn = []
   for (let i = 0; i < Math.min(orderbook.value.asks.length, orderbook.value.bids.length, props.limit); ++i) {
     for (const side of ['bid', 'ask']) {
-      rtn.push(getIthRowItem(i, side))
+      rtn.push(toIthRowItem(i, side))
     }
   }
   return rtn

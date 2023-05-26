@@ -1,5 +1,5 @@
 import { Ref } from 'vue'
-import useCcxtClient from '~/composables/useCcxtClient'
+import useCcxtClient from '~/components/trading/useCcxtClient'
 
 const usePrecisionFormatter = (
   exchangeId: string | Ref<string>

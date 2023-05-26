@@ -2,7 +2,7 @@ import { onMounted, onUnmounted, readonly, ref, type Ref, watch } from 'vue'
 import { castToRef } from '~/utils/vue/cast'
 import { Socket } from 'socket.io-client'
 import { OrderBook } from '~/utils/ccxt/types'
-import useCcxtClient from '~/composables/useCcxtClient'
+import useCcxtClient from '~/components/trading/useCcxtClient'
 
 interface Options {
   limit?: number | Ref<number>

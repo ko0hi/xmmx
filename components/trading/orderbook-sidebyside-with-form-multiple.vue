@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { OrderbookSidebysideWithForm } from '#components'
 import { onMounted, ref, shallowRef } from 'vue'
+import OrderbookSidebysideWithForm from '~/components/trading/orderbook-sidebyside-with-form.vue'
 
 const orderbookComponent = shallowRef(OrderbookSidebysideWithForm)
 const orderbookList = ref([])
@@ -43,7 +43,7 @@ onMounted(() => addOrderbook())
         <component
           :is="orderbook.component"
           class="-mt-1"
-          :exchangeId="orderbook?.props?.exchangeId"
+          :exchange-id="orderbook?.props?.exchangeId"
           :symbol="orderbook?.props?.symbol"
         />
       </div>

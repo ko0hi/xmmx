@@ -1,4 +1,4 @@
-import useCcxtClient from '~/composables/useCcxtClient'
+import useCcxtClient from '~/components/trading/useCcxtClient'
 import { computed, Ref } from 'vue'
 
 const useAvailableSymbols = (exchangeId: string | Ref<string>) => {
