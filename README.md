@@ -76,7 +76,13 @@ You can access to XMMX with `http://localhost:3000`.
 
 ## Update your version with the latest commit
 
-After pulling the latest commit in the main branch, run `update.sh` that just executes `docker-compose down && docker-compose build` inside.
+First pull the latest commit in the main branch. **Do not foget ``--recurse-submodules`` to pull changes in `lib/ccxt-server` as well.**
+
+```bash
+git pull --recurse-submodules
+```
+
+run `update.sh` that just executes `docker-compose down && docker-compose build` inside.
 
 ```bash
 sh ./update.sh
