@@ -26,7 +26,7 @@ import type {
 import { io, Socket } from 'socket.io-client'
 import { NotImplementedError } from '~/utils/exceptions'
 
-import { useRuntimeConfig } from '#app'
+import { useRuntimeConfig } from '#imports'
 
 class CcxtClient {
   protected exchangeId: string
