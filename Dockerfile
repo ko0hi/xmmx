@@ -4,6 +4,6 @@ WORKDIR /usr/src/app
 
 COPY . .
 
-RUN yarn
+RUN yarn && yarn build
 
-ENTRYPOINT [ "yarn", "dev" ]
+ENTRYPOINT [ "node_modules/pm2/bin/pm2", "start", "--no-daemon", "ecosystem.config.js"]

@@ -30,6 +30,5 @@ services:
     environment:
       # CSRなのでブラウザ（ホストマシンからみた時のccxt-serverのURLになる）
       - CCXT_SERVER_URL=http://0.0.0.0:3001
-    entrypoint: sh -c 'yarn dev'
     depends_on:
       - xmmx-ccxt-server
