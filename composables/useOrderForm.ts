@@ -1,6 +1,7 @@
-import { Ref, ref } from 'vue'
 import useAvailableExchanges from '~/composables/useAvailableExchanges'
 import useAvailableSymbols from '~/composables/useAvailableSymbols'
+import { computed, Ref, ref, watch } from 'vue'
+import useCcxtClient from '~/composables/useCcxtClient'
 
 const useOrderForm = (initialParams: {
   exchangeId?: string

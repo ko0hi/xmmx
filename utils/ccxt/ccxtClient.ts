@@ -1,20 +1,10 @@
-import {
-  type Balances,
-  type Exchange,
-  type Market,
-  type OHLCV,
-  type Order,
-  type OrderBook,
-  type Ticker,
-  type Trade,
-} from 'ccxt'
 import type {
+  Balances,
   CancelAllOrdersParams,
   CancelOrderParams,
   CancelOrdersParams,
   CreateOrderParams,
   EditOrderParams,
-  ExchangeOptions,
   FetchClosedOrdersParams,
   FetchMyTradesParams,
   FetchOHLCVParams,
@@ -22,27 +12,37 @@ import type {
   FetchOrderbookParams,
   FetchOrderParams,
   FetchTickerParams,
+  Market,
+  OHLCV,
+  Order,
+  OrderBook,
   OrderParams,
   OrderState,
+  Trade,
   WatchOrderbookParams,
   WatchTickerParams,
   WatchTradesParams,
 } from './types'
 import { io, Socket } from 'socket.io-client'
+import { NotImplementedError } from '~/utils/exceptions'
+
+import { useRuntimeConfig } from '#app'
 
 class CcxtClient {
-  protected exchange: Exchange
+  protected exchangeId: string
   protected ccxtServerUrl: string
   protected baseUrl: string
   private readonly orderState: OrderState
   private readonly orderHistory: Order[]
+  private readonly orderbookCache: { [key: string]: OrderBook }
 
-  constructor(ExchangeClass: new (options: ExchangeOptions) => Exchange, options: ExchangeOptions) {
-    this.exchange = new ExchangeClass(options)
+  constructor(exchangeId: string) {
+    this.exchangeId = exchangeId
     this.ccxtServerUrl = useRuntimeConfig().public.ccxtServerUrl
-    this.baseUrl = `${this.ccxtServerUrl}/api/${this.exchange.id}`
+    this.baseUrl = `${this.ccxtServerUrl}/api/${this.exchangeId}`
     this.orderState = {}
     this.orderHistory = []
+    this.orderbookCache = {}
   }
 
   fetchMarkets = async (): Promise<Market[]> => {
@@ -50,26 +50,23 @@ class CcxtClient {
   }
 
   fetchTicker = async (params: FetchTickerParams): Promise<any> => {
-    return await this.exchange.fetchTicker(params.symbol)
+    throw new NotImplementedError()
   }
 
   fetchOrderbook = async (params: FetchOrderbookParams): Promise<OrderBook> => {
-    const { symbol, limit } = params
-    return await this.exchange.fetchOrderBook(symbol, limit)
+    throw new NotImplementedError()
   }
 
   fetchOHLCV = async (params: FetchOHLCVParams): Promise<OHLCV[]> => {
-    const { symbol, timeframe, since, limit } = params
-    return await this.exchange.fetchOHLCV(symbol, timeframe, since, limit)
+    throw new NotImplementedError()
   }
 
   fetchBalance = async (): Promise<Balances> => {
-    return await this.exchange.fetchBalance()
+    throw new NotImplementedError()
   }
 
   fetchOrder = async (params: FetchOrderParams): Promise<Order> => {
-    const { id, symbol, params: extraParams } = params
-    return await this.exchange.fetchOrder(id, symbol, extraParams)
+    throw new NotImplementedError()
   }
 
   fetchOpenOrders = async (params: FetchOpenOrdersParams | null = null): Promise<Order[]> => {
@@ -83,8 +80,7 @@ class CcxtClient {
   }
 
   fetchClosedOrders = async (params: FetchClosedOrdersParams): Promise<Order[]> => {
-    const { symbol, since, limit, params: extraParams } = params
-    return await this.exchange.fetchClosedOrders(symbol, since, limit, extraParams)
+    throw new NotImplementedError()
   }
 
   fetchOrders = async (): Promise<Order[]> => {
@@ -154,65 +150,52 @@ class CcxtClient {
   }
 
   cancelOrders = async (params: CancelOrdersParams): Promise<Order[]> => {
-    const { ids, symbol, params: extraParams } = params
-    const canceledOrders = []
-    for (const id of ids) {
-      canceledOrders.push(await this.exchange.cancelOrder(id, symbol, extraParams))
-    }
-    return canceledOrders
+    throw new NotImplementedError()
   }
 
   cancelAllOrders = async (params: CancelAllOrdersParams): Promise<boolean> => {
-    if (this.exchange.has.cancelAllOrders !== undefined) {
-      const { symbol, params: extraParams } = params
-      return await this.exchange.cancelAllOrders(symbol, extraParams)
-    } else {
-      throw new Error('cancelAllOrders is not supported by this exchange.')
-    }
+    throw new NotImplementedError()
   }
 
   fetchMyTrades = async (params: FetchMyTradesParams): Promise<Trade[]> => {
-    const { symbol, since, limit, params: extraParams } = params
-    return await this.exchange.fetchMyTrades(symbol, since, limit, extraParams)
+    throw new NotImplementedError()
   }
 
   watchTicker = async (params: WatchTickerParams): Promise<void> => {
-    await this.exchange.watchOrderBook(params.symbol)
+    throw new NotImplementedError()
   }
 
   watchOrderbook = async (params: WatchOrderbookParams): Promise<Socket> => {
     const socket = io(this.ccxtServerUrl)
 
     socket.on('connect', () => {
-      socket.emit('subscribeOrderbook', { exchangeId: this.exchange.id, symbol: params.symbol })
+      socket.emit('subscribeOrderbook', { exchangeId: this.exchangeId, symbol: params.symbol })
     })
 
     socket.on('orderbook', data => {
-      // @ts-ignore
-      this.exchange.orderbooks[data.symbol] = data.orderbook
+      this.orderbookCache[data.symbol] = data.orderbook
     })
 
     socket.on('disconnect', () => {
-      console.log(`watchOrderbook with %o got disconnected.`, { exchange: this.exchange.id, ...params })
+      console.log(`watchOrderbook with %o got disconnected.`, { exchange: this.exchangeId, ...params })
     })
 
     return socket
   }
 
   watchTrades = async (params: WatchTradesParams): Promise<void> => {
-    await this.exchange.watchTrades(params.symbol)
+    throw new NotImplementedError()
   }
 
   watchOrders = async (onOrdersUpdate?: (orders: Order[], state: OrderState) => void): Promise<Socket> => {
     const socket = io(this.ccxtServerUrl)
 
     socket.on('connect', () => {
-      socket.emit('subscribeOrders', { exchangeId: this.exchange.id })
+      socket.emit('subscribeOrders', { exchangeId: this.exchangeId })
     })
 
     socket.on('orders', (data: { orders: Order[] }) => {
       for (const order of data.orders) {
-        console.log('Order', order)
         this.orderState[order.id] = { ...this.orderState[order.id], ...order }
         this.orderHistory.push(order)
       }
@@ -223,26 +206,17 @@ class CcxtClient {
     })
 
     socket.on('disconnect', () => {
-      console.log(`watchOrders with %o got disconnected.`, { exchange: this.exchange.id })
+      console.log(`watchOrders with %o got disconnected.`, { exchange: this.exchangeId })
     })
 
     return socket
   }
 
-  // @ts-expect-error('no type in ccxt')
-  sleep = async (interval: number): Promise<void> => this.exchange.sleep(interval)
-  // @ts-expect-error('no type in ccxt')
-  getTickerFromSocket = (symbol: string): Ticker => this.exchange.tickers[symbol]
-  // @ts-expect-error('no type in ccxt')
-  getOrderbookFromSocket = (symbol: string): Orderbook => this.exchange.orderbooks[symbol]
-
-  getTradesFromSocket = (symbol: string): Trade => this.exchange.trades[symbol]
+  getOrderbookFromSocket = (symbol: string): OrderBook => this.orderbookCache[symbol]
 
   getOrderStateFromSocket = (): OrderState => this.orderState
 
   getOrdersHistoryFromSocket = (): Order[] => this.orderHistory
-
-  getExchange = (): Exchange => this.exchange
 
   initializeOrders = async () => (await this.fetchOrders()).forEach(o => (this.orderState[o.id] = o))
 }

@@ -1,10 +1,10 @@
-import { ComputedRef } from 'vue'
 import useCcxtClient from '~/composables/useCcxtClient'
-import { Order } from 'ccxt'
 import { useDialog } from 'naive-ui'
+import { Ref } from 'vue'
+import { Order } from '~/utils/ccxt/types'
 
-const useEditOrder = (exchangeId: string | ComputedRef<string>, exchangeOptions?: object | ComputedRef<object>) => {
-  const { client } = useCcxtClient(exchangeId, exchangeOptions)
+const useEditOrder = (exchangeId: string | Ref<string>) => {
+  const { client } = useCcxtClient(exchangeId)
   const dialog = useDialog()
 
   const editOrder = async (

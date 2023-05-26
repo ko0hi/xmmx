@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { Order } from 'ccxt'
 import dayjs from 'dayjs'
 import useCcxtClient from '~/composables/useCcxtClient'
 import useEditOrder from '~/composables/useEditOrder'
@@ -7,6 +6,10 @@ import FontawesomeIconWrapper from '~/components/fontawesome-icon-wrapper.vue'
 import useCurrencyIcon from '~/composables/useCurrencyIcon'
 import useOrderFormDialog from '~/composables/useOrderFormDialog'
 import NumberInputWithAdjustArrows from '~/components/number-input-with-adjust-arrows.vue'
+import usePrecisionFormatter from '~/composables/usePrecisionFormatter'
+import useOrderState from '~/composables/useOrderState'
+import { computed, h } from 'vue'
+import { Order } from '~/utils/ccxt/types'
 
 const props = defineProps<{
   exchangeId: string

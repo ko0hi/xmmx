@@ -38,6 +38,7 @@ The values are the credentials for the exchange like `apiKey` and `secret` (`pas
 on exchanges).
 
 #### Docker environment
+
 ```bash
 sh ./start.sh
 ```
@@ -65,7 +66,6 @@ Then, run the following command.
 yarn && yarn start
 ```
 
-
 Move back to the root directory with different terminal and run the following command.
 
 ```bash
@@ -73,7 +73,6 @@ yarn && yarn dev
 ```
 
 You can access to XMMX with `http://localhost:3000`.
-
 
 ## Update your version with the latest commit
 

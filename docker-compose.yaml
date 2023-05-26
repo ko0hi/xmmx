@@ -7,16 +7,14 @@ services:
       context: lib/ccxt-server
       dockerfile: Dockerfile
     working_dir: /usr/src/app
-    restart: always
     volumes:
       - ./apis.json:/usr/src/app/apis.json
     ports:
-      - "3001:3001"
+      - '3001:3001'
     environment:
       - PORT=3001
       - HOST=0.0.0.0
       - CCXT_SERVER_APIS=/usr/src/app/apis.json
-    entrypoint: sh -c 'yarn start'
 
   xmmx-nuxt-client:
     hostname: xmmx-nuxt-client
@@ -27,8 +25,8 @@ services:
     working_dir: /usr/src/app
     restart: always
     ports:
-      - "3000:3000"
-      - "24678:24678"
+      - '3000:3000'
+      - '24678:24678'
     environment:
       # CSRなのでブラウザ（ホストマシンからみた時のccxt-serverのURLになる）
       - CCXT_SERVER_URL=http://0.0.0.0:3001
