@@ -1,32 +1,19 @@
 <script setup lang="ts">
-import { onMounted, ref, shallowRef } from 'vue'
-import OrderbookSidebysideWithForm from '~/components/trading/orderbook-sidebyside-with-form.vue'
+import { onMounted } from 'vue'
+import useOrderbookList from '~/components/trading/useOrderbookList'
 
-const orderbookComponent = shallowRef(OrderbookSidebysideWithForm)
-const orderbookList = ref([])
+const { orderbookList, addOrderbook, deleteOrderbook } = useOrderbookList()
 
 onMounted(() => {
-  const defaults = [
+  ;[
     { exchangeId: 'binanceusdm', symbol: 'BTC/USDT:USDT' },
     { exchangeId: 'binancecoinm', symbol: 'BTC/USD:BTC' },
     { exchangeId: 'binancecoinm', symbol: 'BTC/USD:BTC-230630' },
     { exchangeId: 'binanceusdm', symbol: 'ETH/USDT:USDT' },
     { exchangeId: 'binancecoinm', symbol: 'ETH/USD:ETH' },
     { exchangeId: 'binancecoinm', symbol: 'ETH/USD:ETH-230630' },
-  ]
-
-  defaults.map(d => {
-    orderbookList.value.push({ component: orderbookComponent, key: new Date().getTime(), props: d })
-  })
+  ].map(addOrderbook)
 })
-
-const addOrderbook = () => {
-  orderbookList.value.push({ component: orderbookComponent, key: new Date().getTime() })
-}
-
-const onDeleteButtonClick = key => {
-  orderbookList.value = orderbookList.value.filter(item => item.key !== key)
-}
 
 onMounted(() => addOrderbook())
 </script>
@@ -36,7 +23,7 @@ onMounted(() => addOrderbook())
     <div class="flex flex-wrap gap-5">
       <div v-for="[index, orderbook] in Object.entries(orderbookList)" :key="orderbook.key">
         <div class="flex justify-end m-0 p-0">
-          <n-button quaternary circle size="small" @click="onDeleteButtonClick(orderbook.key)">
+          <n-button quaternary circle size="small" @click="deleteOrderbook(orderbook.key)">
             <span v-if="index > 0" class="text-xs">✖</span>
           </n-button>
         </div>
