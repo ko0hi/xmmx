@@ -2,7 +2,7 @@
 
 export default defineNuxtConfig({
   css: ['@fortawesome/fontawesome-svg-core/styles.css'],
-  modules: ['@nuxtjs/tailwindcss', '@pinia/nuxt'],
+  modules: ['@nuxtjs/tailwindcss', '@pinia/nuxt', '@pinia-plugin-persistedstate/nuxt'],
   runtimeConfig: {
     public: {
       ccxtServerUrl: process.env.CCXT_SERVER_URL || 'http://localhost:3001',
