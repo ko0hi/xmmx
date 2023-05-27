@@ -1,7 +1,7 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 
 export default defineNuxtConfig({
-  css: ['@fortawesome/fontawesome-svg-core/styles.css'],
+  css: ['@fortawesome/fontawesome-svg-core/styles.css', '@/assets/scss/tailwind-preflight.scss'],
   modules: ['@nuxtjs/tailwindcss', '@pinia/nuxt', '@pinia-plugin-persistedstate/nuxt'],
   runtimeConfig: {
     public: {
@@ -9,7 +9,6 @@ export default defineNuxtConfig({
     },
   },
   tailwindcss: {
-    cssPath: '@assets/scss/tailwind.scss',
     configPath: 'tailwind.config',
   },
   ssr: false,
