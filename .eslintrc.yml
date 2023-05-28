@@ -11,3 +11,5 @@ parserOptions:
   parser: '@typescript-eslint/parser'
   ecmaVersion: latest
   project: ./tsconfig.json
+rules:
+  no-prototype-builtins: off

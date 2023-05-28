@@ -2,7 +2,7 @@ import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import { Market } from '~/utils/ccxt/types'
 
-const useMarketsStore = defineStore('globalStore', () => {
+const useMarketsStore = defineStore('marketStore', () => {
   const marketsRef = ref<Record<string, Market[]>>({})
   const isOnFetching = ref<Map<string, true>>(new Map<string, true>())
   const getMarkets = (name: string): Market[] => marketsRef.value[name]
