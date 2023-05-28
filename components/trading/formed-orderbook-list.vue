@@ -3,8 +3,15 @@ import { onMounted } from 'vue'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import useOrderbookList from '~/components/trading/useOrderbookList'
 
-const { orderbookList, addOrderbook, deleteOrderbook, deleteAllOrderbooks, saveCurrentList, initWithPreset } =
-  useOrderbookList()
+const {
+  orderbookList,
+  addOrderbook,
+  deleteOrderbook,
+  deleteAllOrderbooks,
+  reloadAllOrderbooks,
+  saveCurrentList,
+  initWithPreset,
+} = useOrderbookList()
 
 onMounted(() => {
   ;[
@@ -24,7 +31,12 @@ onMounted(() => addOrderbook())
   <div>
     <preferences-orderbook-presets-tab class="mb-0" @click-preset="initWithPreset" @save-orderbooks="saveCurrentList" />
     <div class="border border-green-600 w-full">
-      <div class="flex justify-end bg-opacity-50 p-2">
+      <div class="flex justify-end bg-opacity-50 gap-2 p-2">
+        <font-awesome-icon
+          class="cursor-pointer text-gray-200 hover:text-gray-500 text-md"
+          :icon="['fas', 'arrows-rotate']"
+          @click="reloadAllOrderbooks"
+        />
         <font-awesome-icon
           class="cursor-pointer text-gray-200 hover:text-gray-500 text-md"
           :icon="['fas', 'trash']"

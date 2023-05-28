@@ -38,6 +38,12 @@ const useOrderbookList = () => {
       orderbookList.value.map(item => item.props)
     )
 
+  const reloadAllOrderbooks = () => {
+    const tmp = orderbookList.value
+    resetOrderbookList()
+    tmp.map(x => addOrderbook(x.props))
+  }
+
   const initWithPreset = (key: string) => {
     if (hasPreset(key)) {
       resetOrderbookList()
@@ -52,6 +58,7 @@ const useOrderbookList = () => {
     addOrderbook,
     deleteOrderbook,
     deleteAllOrderbooks,
+    reloadAllOrderbooks,
     saveCurrentList,
     initWithPreset,
   }
