@@ -28,7 +28,7 @@ const resetRefs = () => {
     <div
       v-for="preset in orderbookPresets"
       :key="preset.key"
-      class="border border-green-600 py-1 px-2 w-64 h-8 rounded-t-md items-center cursor-pointer hover:bg-green-100 text-overflow overflow-hidden"
+      class="border border-b-0 border-green-600 py-1 px-2 w-32 h-8 rounded-t-md items-center cursor-pointer hover:bg-green-100 text-overflow overflow-hidden"
       @click="emits('clickPreset', preset.key)"
     >
       <!-- presetの名前を変更中 -->
@@ -64,7 +64,7 @@ const resetRefs = () => {
     </div>
     <!-- 現在の状態をpresetに登録 -->
     <div
-      class="border border-green-600 py-1 px-2 w-64 h-8 text-center rounded-t-md cursor-pointer hover:bg-green-100 text-overflow overflow-hidden"
+      class="border border-b-0 border-green-600 py-1 px-2 w-64 h-8 text-center rounded-t-md cursor-pointer hover:bg-green-100 text-overflow overflow-hidden"
     >
       <input
         v-model="newPresetNameRef"

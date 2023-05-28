@@ -19,11 +19,17 @@ const useOrderbookList = () => {
   const resetOrderbookList = () => (orderbookList.value = [])
 
   const addOrderbook = (config: OrderbookConfig = { exchangeId: 'binanceusdm', symbol: 'BTC/USDT:USDT' }) => {
+    console.log(config)
     orderbookList.value.push({ component: FormedOrderbook, key: uuid4(), props: config })
+    console.log(orderbookList.value)
   }
 
   const deleteOrderbook = (key: string) => {
     orderbookList.value = orderbookList.value.filter(item => item.key !== key)
+  }
+
+  const deleteAllOrderbooks = () => {
+    orderbookList.value = orderbookList.value.slice(0, 1)
   }
 
   const saveCurrentList = (name?: string) =>
@@ -45,6 +51,7 @@ const useOrderbookList = () => {
     orderbookList,
     addOrderbook,
     deleteOrderbook,
+    deleteAllOrderbooks,
     saveCurrentList,
     initWithPreset,
   }
