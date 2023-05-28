@@ -1,36 +1,36 @@
 <script setup lang="ts">
-import { computed, CSSProperties, h, ref, watch } from 'vue'
+import { computed, CSSProperties, h, onMounted, Ref, ref, watch } from 'vue'
 import useCcxtClient from '~/components/trading/useCcxtClient'
 import useCurrencyIcon from '~/composables/useCurrencyIcon'
 import useOrderFormDialog from '~/components/trading/useOrderFormDialog'
 
-type OrderbookProps = {
+type Config = {
   exchangeId?: string
   symbol?: string
   interval?: number
   limit?: number
   round?: number
-  exchangeOptions?: object
 }
 
-const props = withDefaults(defineProps<OrderbookProps>(), {
-  exchangeId: 'binanceusdm',
-  symbol: 'BTC/USDT:USDT',
-  interval: 1000,
-  limit: 5,
-  round: null,
-  exchangeOptions: () => {},
+const props = withDefaults(defineProps<{ initialConfig: Config; config?: Ref<Config> }>(), {
+  initialConfig: () => ({
+    exchangeId: 'binanceusdm',
+    symbol: 'BTC/USDT:USDT',
+    interval: 1000,
+    limit: 5,
+    round: null,
+  }),
+  config: ref(),
 })
 
-const exchangeId = ref(props.exchangeId)
-const symbol = ref(props.symbol)
-const interval = ref(props.interval)
-const limit = ref(props.limit)
-const round = ref(props.round)
-const exchangeOptions = ref(props.exchangeOptions)
-const clicked = ref()
+const exchangeId = ref(props.initialConfig.exchangeId ?? null)
+const symbol = ref(props.initialConfig.symbol ?? null)
+const interval = ref(props.initialConfig.interval ?? 1000)
+const limit = ref(props.initialConfig.limit ?? 5)
+const round = ref(props.initialConfig.round ?? null)
+const clickedOrder = ref()
 
-const { listAvailableMarkets, getTickSize } = useCcxtClient(exchangeId, exchangeOptions)
+const { listAvailableMarkets, getTickSize } = useCcxtClient(exchangeId)
 const { openOrderFormDialog } = useOrderFormDialog()
 
 const options = computed(() => listAvailableMarkets().map(item => ({ label: `${item}`, value: item })))
@@ -44,13 +44,13 @@ const tickSize = computed(() => {
 
 const openOrderFormFromOrderbookClick = () => {
   openOrderFormDialog({
-    exchangeId: clicked.value.exchangeId,
-    symbol: clicked.value.symbol,
-    side: clicked.value.side,
+    exchangeId: clickedOrder.value.exchangeId,
+    symbol: clickedOrder.value.symbol,
+    side: clickedOrder.value.side,
     type: 'limit',
-    price: parseFloat(clicked.value.price),
-    disableBuy: clicked.value.side == 'ask',
-    disableSell: clicked.value.side == 'bid',
+    price: parseFloat(clickedOrder.value.price),
+    disableBuy: clickedOrder.value.side == 'ask',
+    disableSell: clickedOrder.value.side == 'bid',
   })
 }
 
@@ -65,9 +65,21 @@ const openOrderFormFromButtonClick = (side: string) => {
   })
 }
 
+const emits = defineEmits<{ e: 'update:config'; config: Config }>()
+const emitConfig = () =>
+  // eslint-disable-next-line vue/require-explicit-emits
+  emits('update:config', {
+    exchangeId: exchangeId.value,
+    symbol: symbol.value,
+    interval: interval.value,
+    limit: limit.value,
+    round: round.value,
+  })
+
 watch(exchangeId, () => (symbol.value = listAvailableMarkets()[0]))
-watch([clicked], openOrderFormFromOrderbookClick)
+watch([clickedOrder], openOrderFormFromOrderbookClick)
 watch([exchangeId, symbol, tickSize], () => (round.value = tickSize.value), { immediate: true })
+watch([exchangeId, symbol, interval, limit, round], emitConfig, { immediate: true })
 
 const labelStyle: CSSProperties = computed(() => ({
   fontSize: '10px',
@@ -138,13 +150,12 @@ const labelStyle: CSSProperties = computed(() => ({
     </n-form>
     <trading-the-orderbook
       v-if="symbol != null"
-      v-model:clicked="clicked"
+      v-model:clicked="clickedOrder"
       :exchange-id="exchangeId"
       :symbol="symbol"
       :interval="interval"
       :limit="limit"
       :round="round"
-      :exchange-options="exchangeOptions"
     >
       <template #afterOrderbook>
         <n-button class="rounded-md w-full m-3" size="tiny" type="success" @click="openOrderFormFromButtonClick('buy')"

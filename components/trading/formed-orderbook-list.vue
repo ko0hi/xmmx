@@ -55,9 +55,9 @@ onMounted(() => addOrderbook())
           </div>
           <component
             :is="orderbook.component"
+            v-model:config="orderbook.configRef"
             class="-mt-1"
-            :exchange-id="orderbook?.props?.exchangeId"
-            :symbol="orderbook?.props?.symbol"
+            :initial-config="orderbook.initialConfig"
           />
         </div>
         <div class="flex m-5 items-center justify-center">

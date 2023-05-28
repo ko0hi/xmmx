@@ -1,27 +1,27 @@
-import { ref } from 'vue'
+import { Ref, ref } from 'vue'
 import useOrderbookPresetsStore, { OrderbookConfig } from '~/components/preferences/useOrderbookPresetsStore'
 import FormedOrderbook from '~/components/trading/formed-orderbook.vue'
 import { v4 as uuid4 } from 'uuid'
-import { storeToRefs } from 'pinia'
 
 const useOrderbookList = () => {
-  const { orderbookPresets } = storeToRefs(useOrderbookPresetsStore())
-  const { getPreset, hasPreset, setPreset } = useOrderbookPresetsStore()
-
   const orderbookList = ref<
     {
       component: typeof FormedOrderbook
       key: string
-      props: OrderbookConfig
+      initialConfig: OrderbookConfig
+      configRef: Ref<OrderbookConfig>
     }[]
   >([])
 
   const resetOrderbookList = () => (orderbookList.value = [])
 
   const addOrderbook = (config: OrderbookConfig = { exchangeId: 'binanceusdm', symbol: 'BTC/USDT:USDT' }) => {
-    console.log(config)
-    orderbookList.value.push({ component: FormedOrderbook, key: uuid4(), props: config })
-    console.log(orderbookList.value)
+    orderbookList.value.push({
+      component: FormedOrderbook,
+      key: uuid4(),
+      initialConfig: config,
+      configRef: ref(config),
+    })
   }
 
   const deleteOrderbook = (key: string) => {
@@ -32,19 +32,22 @@ const useOrderbookList = () => {
     orderbookList.value = orderbookList.value.slice(0, 1)
   }
 
-  const saveCurrentList = (name?: string) =>
-    setPreset(
-      typeof name == 'string' ? name : uuid4(),
-      orderbookList.value.map(item => item.props)
-    )
-
   const reloadAllOrderbooks = () => {
     const tmp = orderbookList.value
     resetOrderbookList()
-    tmp.map(x => addOrderbook(x.props))
+    tmp.map(item => addOrderbook(item.configRef))
+  }
+
+  const saveCurrentList = (name?: string) => {
+    const { setPreset } = useOrderbookPresetsStore()
+    setPreset(
+      typeof name == 'string' ? name : uuid4(),
+      orderbookList.value.map(item => item.configRef)
+    )
   }
 
   const initWithPreset = (key: string) => {
+    const { orderbookPresets, getPreset, hasPreset } = useOrderbookPresetsStore()
     if (hasPreset(key)) {
       resetOrderbookList()
       getPreset(key)?.map(addOrderbook)
