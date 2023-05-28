@@ -52,6 +52,7 @@
     "@fortawesome/vue-fontawesome": "^3.0.3",
     "@pinia/nuxt": "^0.4.9",
     "@types/socket.io-client": "^3.0.0",
+    "@vueuse/components": "^10.1.2",
     "@vueuse/core": "^10.1.0",
     "pinia": "^2.0.35",
     "pm2": "^5.3.0",
