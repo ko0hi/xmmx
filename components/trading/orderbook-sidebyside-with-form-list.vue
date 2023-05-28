@@ -2,7 +2,7 @@
 import { onMounted } from 'vue'
 import useOrderbookList from '~/components/trading/useOrderbookList'
 
-const { orderbookList, addOrderbook, deleteOrderbook } = useOrderbookList()
+const { orderbookList, addOrderbook, deleteOrderbook, saveCurrentList, initWithPreset } = useOrderbookList()
 
 onMounted(() => {
   ;[
@@ -20,6 +20,7 @@ onMounted(() => addOrderbook())
 
 <template>
   <div>
+    <preferences-orderbook-presets-tab @click-preset="initWithPreset" @save-orderbooks="saveCurrentList" />
     <div class="flex flex-wrap gap-5">
       <div v-for="[index, orderbook] in Object.entries(orderbookList)" :key="orderbook.key">
         <div class="flex justify-end m-0 p-0">
@@ -38,6 +39,9 @@ onMounted(() => addOrderbook())
         <n-button class="h-full" size="small" circle @click="addOrderbook">+</n-button>
       </div>
     </div>
+
+    <n-button @click="saveCurrentList"></n-button>
+    <n-button @click="initWithPreset('b')">init</n-button>
   </div>
 </template>
 
