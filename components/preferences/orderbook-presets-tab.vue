@@ -29,7 +29,7 @@ const resetRefs = () => {
     <div
       v-for="preset in orderbookPresets"
       :key="preset.key"
-      class="border border-b-0 border-green-600 py-1 px-2 w-40 h-8 rounded-t-md items-center cursor-pointer hover:bg-green-100 text-overflow overflow-hidden"
+      class="border border-b-0 border-green-600 py-1 px-2 w-32 h-8 rounded-t-md items-center cursor-pointer hover:bg-green-100 text-overflow overflow-hidden"
       @click="editingTabNameRef === '' ? emits('clickPreset', preset.key) : null"
     >
       <!-- presetの名前を変更中 -->
@@ -67,11 +67,6 @@ const resetRefs = () => {
           />
           <font-awesome-icon
             class="cursor-pointer text-gray-200 hover:text-gray-500 text-sm"
-            :icon="['fas', 'copy']"
-            @click="emits('saveOrderbooks', preset.key)"
-          />
-          <font-awesome-icon
-            class="cursor-pointer text-gray-200 hover:text-gray-500 text-sm"
             :icon="['fas', 'trash']"
             @click="popPreset(preset.key)"
           />
@@ -80,7 +75,7 @@ const resetRefs = () => {
     </div>
     <!-- 現在の状態をpresetに登録 -->
     <div
-      class="border border-b-0 border-green-600 py-1 px-2 w-40 h-8 text-center rounded-t-md cursor-pointer hover:bg-green-100 text-overflow overflow-hidden"
+      class="border border-b-0 border-green-600 py-1 px-2 w-32 h-8 text-center rounded-t-md cursor-pointer hover:bg-green-100 text-overflow overflow-hidden"
     >
       <input
         v-model="newPresetNameRef"
