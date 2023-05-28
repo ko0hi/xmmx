@@ -64,11 +64,12 @@ const resetRefs = () => {
     </div>
     <!-- 現在の状態をpresetに登録 -->
     <div
-      class="border border-b-0 border-green-600 py-1 px-2 w-64 h-8 text-center rounded-t-md cursor-pointer hover:bg-green-100 text-overflow overflow-hidden"
+      class="border border-b-0 border-green-600 py-1 px-2 w-32 h-8 text-center rounded-t-md cursor-pointer hover:bg-green-100 text-overflow overflow-hidden"
     >
       <input
         v-model="newPresetNameRef"
-        placeholder="save current orderbooks"
+        class="w-full text-center"
+        placeholder="register"
         @change="
           () => {
             emits('saveOrderbooks', newPresetNameRef)
