@@ -61,7 +61,13 @@ onMounted(() => addOrderbook())
           />
         </div>
         <div class="flex m-5 items-center justify-center">
-          <n-button class="h-full" size="small" circle @click="addOrderbook">+</n-button>
+          <n-button
+            class="h-full"
+            size="small"
+            circle
+            @click="addOrderbook({ exchangeId: 'binanceusdm', symbol: 'BTC/USDT:USDT' })"
+            >+</n-button
+          >
         </div>
       </div>
     </div>
