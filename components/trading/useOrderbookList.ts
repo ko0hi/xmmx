@@ -1,6 +1,6 @@
 import { ref } from 'vue'
 import useOrderbookPresetsStore, { OrderbookConfig } from '~/components/preferences/useOrderbookPresetsStore'
-import OrderbookSidebysideWithForm from '~/components/trading/orderbook-sidebyside-with-form.vue'
+import FormedOrderbook from '~/components/trading/formed-orderbook.vue'
 import { v4 as uuid4 } from 'uuid'
 import { storeToRefs } from 'pinia'
 
@@ -10,7 +10,7 @@ const useOrderbookList = () => {
 
   const orderbookList = ref<
     {
-      component: typeof OrderbookSidebysideWithForm
+      component: typeof FormedOrderbook
       key: string
       props: OrderbookConfig
     }[]
@@ -19,21 +19,18 @@ const useOrderbookList = () => {
   const resetOrderbookList = () => (orderbookList.value = [])
 
   const addOrderbook = (config: OrderbookConfig = { exchangeId: 'binanceusdm', symbol: 'BTC/USDT:USDT' }) => {
-    orderbookList.value.push({ component: OrderbookSidebysideWithForm, key: uuid4(), props: config })
+    orderbookList.value.push({ component: FormedOrderbook, key: uuid4(), props: config })
   }
 
   const deleteOrderbook = (key: string) => {
     orderbookList.value = orderbookList.value.filter(item => item.key !== key)
   }
 
-  const saveCurrentList = (name?: string) => {
+  const saveCurrentList = (name?: string) =>
     setPreset(
       typeof name == 'string' ? name : uuid4(),
       orderbookList.value.map(item => item.props)
     )
-
-    console.log(orderbookPresets)
-  }
 
   const initWithPreset = (key: string) => {
     if (hasPreset(key)) {

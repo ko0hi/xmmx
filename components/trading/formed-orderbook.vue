@@ -136,7 +136,7 @@ const labelStyle: CSSProperties = computed(() => ({
         </n-radio-group>
       </n-form-item>
     </n-form>
-    <trading-orderbook-sidebyside
+    <trading-the-orderbook
       v-if="symbol != null"
       v-model:clicked="clicked"
       :exchange-id="exchangeId"
@@ -154,7 +154,7 @@ const labelStyle: CSSProperties = computed(() => ({
           >SELL
         </n-button>
       </template>
-    </trading-orderbook-sidebyside>
+    </trading-the-orderbook>
   </div>
 </template>
 

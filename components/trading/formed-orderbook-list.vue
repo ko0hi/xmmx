@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { onMounted } from 'vue'
 import useOrderbookList from '~/components/trading/useOrderbookList'
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 
 const { orderbookList, addOrderbook, deleteOrderbook, saveCurrentList, initWithPreset } = useOrderbookList()
 
@@ -23,10 +24,13 @@ onMounted(() => addOrderbook())
     <preferences-orderbook-presets-tab @click-preset="initWithPreset" @save-orderbooks="saveCurrentList" />
     <div class="flex flex-wrap gap-5">
       <div v-for="[index, orderbook] in Object.entries(orderbookList)" :key="orderbook.key">
-        <div class="flex justify-end m-0 p-0">
-          <n-button quaternary circle size="small" @click="deleteOrderbook(orderbook.key)">
-            <span v-if="index > 0" class="text-xs">✖</span>
-          </n-button>
+        <div class="flex gap-2 justify-end items-center p-0 h-5">
+          <font-awesome-icon
+            v-if="index > 0"
+            class="cursor-pointer text-gray-200 hover:text-gray-500 text-xs"
+            :icon="['fas', 'trash']"
+            @click="deleteOrderbook(orderbook.key)"
+          />
         </div>
         <component
           :is="orderbook.component"
@@ -39,7 +43,6 @@ onMounted(() => addOrderbook())
         <n-button class="h-full" size="small" circle @click="addOrderbook">+</n-button>
       </div>
     </div>
-
     <n-button @click="saveCurrentList"></n-button>
     <n-button @click="initWithPreset('b')">init</n-button>
   </div>

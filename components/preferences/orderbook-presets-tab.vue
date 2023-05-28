@@ -56,10 +56,10 @@ const resetRefs = () => {
           {{ preset.key }}
         </p>
         <font-awesome-icon
-          class="cursor-pointer text-red-200 hover:text-red-500"
+          class="cursor-pointer text-gray-200 hover:text-gray-500"
           :icon="['fas', 'trash']"
           @click="popPreset(preset.key)"
-        ></font-awesome-icon>
+        />
       </div>
     </div>
     <!-- 現在の状態をpresetに登録 -->

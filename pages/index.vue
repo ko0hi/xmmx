@@ -2,7 +2,7 @@
   <n-config-provider preflight-style-disabled>
     <n-dialog-provider>
       <div class="flex flex-col m-5 p-5 gap-5">
-        <trading-orderbook-sidebyside-with-form-list />
+        <trading-formed-orderbook-list />
         <trading-order-list exchange-id="binanceusdm" />
       </div>
     </n-dialog-provider>

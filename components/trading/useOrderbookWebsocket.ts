@@ -38,6 +38,7 @@ const useOrderbookWebsocket = (
     }>
   >
   pending: Readonly<Ref<boolean>>
+  init: () => Promise<void>
 } => {
   const symbolRef = castToRef(symbol)
   const intervalRef = castToRef(interval)
@@ -111,7 +112,7 @@ const useOrderbookWebsocket = (
   onUnmounted(stop)
   watch([exchangeIdRef, symbolRef, intervalRef], init)
 
-  return { orderbook: readonly(orderbook), pending: readonly(pending) }
+  return { orderbook: readonly(orderbook), pending: readonly(pending), init }
 }
 
 export default useOrderbookWebsocket
