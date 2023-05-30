@@ -9,7 +9,7 @@ const props = withDefaults(
     exchangeId: string
     symbol: string
     side?: 'BUY' | 'SELL'
-    type?: 'limit' | 'market' | 'stopLimit' | 'stopMarket'
+    type?: 'limit' | 'market' | 'stopLimit' | 'stopMarket' | 'stop_limit' | 'stop_market'
     price?: number
     size?: number
     disableBuy?: boolean

@@ -11,6 +11,7 @@ import { Order } from '~/utils/ccxt/types'
 import FontawesomeIconWrapper from '~/components/ui/fontawesome-icon-wrapper.vue'
 import NumberInputWithAdjustArrows from '~/components/ui/number-input-with-adjust-arrows.vue'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
+import { normalizeOrderType } from '~/utils/ccxt/functions'
 
 const props = defineProps<{
   exchangeId: string
@@ -93,6 +94,7 @@ const columns = computed(() => [
     align: 'center',
     width: 80,
     resizable: true,
+    render: (row: Order) => normalizeOrderType(row.type),
   },
   {
     title: 'Side',
