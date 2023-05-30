@@ -196,8 +196,10 @@ class CcxtClient {
 
     socket.on('orders', (data: { orders: Order[] }) => {
       for (const order of data.orders) {
-        this.orderState[order.id] = { ...this.orderState[order.id], ...order }
-        this.orderHistory.push(order)
+        console.log(order)
+        const transformedOrder = this.transformOrderMessage(order)
+        this.orderState[transformedOrder.id] = { ...this.orderState[transformedOrder.id], ...transformedOrder }
+        this.orderHistory.push(transformedOrder)
       }
 
       if (onOrdersUpdate) {
@@ -222,6 +224,10 @@ class CcxtClient {
 
   extractStopPriceFromOrder = (order: Order): number => {
     throw new NotImplementedError()
+  }
+
+  transformOrderMessage = (message: Order): any => {
+    return message
   }
 }
 
