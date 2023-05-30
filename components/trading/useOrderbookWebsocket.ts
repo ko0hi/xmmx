@@ -56,7 +56,7 @@ const useOrderbookWebsocket = (
   const { exchangeIdRef, client } = useCcxtClient(exchangeId)
 
   const updateOrderbook = async () => {
-    const newOrderbook = client.value.getOrderbookFromSocket(symbolRef.value)
+    const newOrderbook = client.value.getOrderbook(symbolRef.value)
     if (newOrderbook) {
       orderbook.value = {
         asks: roundOrderbook(newOrderbook.asks, 'ask').slice(0, limitRef.value),

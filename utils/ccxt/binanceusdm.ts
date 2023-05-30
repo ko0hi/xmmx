@@ -150,6 +150,10 @@ class Binanceusdm extends CcxtClient {
   extractStopPriceFromOrder = (order: Order): number => {
     return parseFloat(order.info.stopPrice)
   }
+
+  transformOrderMessage = (message: Order): Order => {
+    return { ...message, info: { ...message.info, stopPrice: message.info.sp } }
+  }
 }
 
 export default Binanceusdm

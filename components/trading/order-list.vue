@@ -10,6 +10,7 @@ import { computed, h } from 'vue'
 import { Order } from '~/utils/ccxt/types'
 import FontawesomeIconWrapper from '~/components/ui/fontawesome-icon-wrapper.vue'
 import NumberInputWithAdjustArrows from '~/components/ui/number-input-with-adjust-arrows.vue'
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 
 const props = defineProps<{
   exchangeId: string
@@ -18,7 +19,7 @@ const props = defineProps<{
 const { getTickSize, getLotSize } = useCcxtClient(props.exchangeId)
 const { formatPrice, formatSize } = usePrecisionFormatter(props.exchangeId)
 const { editOrder } = useEditOrder(props.exchangeId)
-const { orderState } = useOrderState(props.exchangeId)
+const { orderState, reload } = useOrderState(props.exchangeId)
 const { openOrderFormDialog } = useOrderFormDialog()
 
 const orders = computed(() => Object.values(orderState.value).sort((a, b) => b.timestamp - a.timestamp))
@@ -229,13 +230,22 @@ const columns = computed(() => [
 
 <template>
   <div>
-    <n-data-table
-      v-if="orders.length > 0"
-      class="order-table"
-      :columns="columns"
-      :data="computed(() => orders).value"
-      :max-height="600"
-      :pagination="{ pageSize: 30 }"
-    />
+    <div class="flex flex-col">
+      <div class="flex justify-end mb-2">
+        <font-awesome-icon
+          class="cursor-pointer text-gray-200 hover:text-gray-500 text-md"
+          :icon="['fas', 'arrows-rotate']"
+          @click="reload"
+        />
+      </div>
+      <n-data-table
+        v-if="orders.length > 0"
+        class="order-table"
+        :columns="columns"
+        :data="computed(() => orders).value"
+        :max-height="600"
+        :pagination="{ pageSize: 30 }"
+      />
+    </div>
   </div>
 </template>

@@ -8,7 +8,7 @@ const useOrderStore = (exchangeId: string | Ref<string>) => {
   return defineStore(`${exchangeId}OrderStore`, () => {
     console.log(`Define order store for ${unref(exchangeId)}`)
     const { client } = useCcxtClient(exchangeId)
-    const orderState = computed(() => client.value.getOrderStateFromSocket())
+    const orderState = computed(() => client.value.getOrderState())
     const msg = useMessage()
     onMounted(async () => {
       await client.value.initializeOrders().then(
@@ -25,6 +25,11 @@ const useOrderStore = (exchangeId: string | Ref<string>) => {
 
     return {
       orderState: readonly(orderState),
+      reload: async () =>
+        await client.value.initializeOrders().then(
+          () => triggerRef(orderState),
+          error => console.error(error)
+        ),
     }
   })()
 }
