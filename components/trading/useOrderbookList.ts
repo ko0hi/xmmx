@@ -38,17 +38,20 @@ const useOrderbookList = () => {
 
   const saveCurrentList = (name?: string) => {
     const { setPreset } = useOrderbookPresetsStore()
-    setPreset(
-      typeof name == 'string' ? name : uuid4(),
-      orderbookList.value.map(item => item.config)
-    )
+    const configToSave = orderbookList.value.map(item => item.config)
+    console.log(`Saving current list as ${name}`, configToSave)
+    setPreset(typeof name == 'string' ? name : uuid4(), configToSave)
   }
 
   const initWithPreset = (key: string) => {
     const { orderbookPresets, getPreset, hasPreset } = useOrderbookPresetsStore()
     if (hasPreset(key)) {
       resetOrderbookList()
-      getPreset(key)?.map(addOrderbook)
+      const preset = getPreset(key)
+      if (preset) {
+        console.log(`Initialize orderbook list with ${key}`, preset)
+        preset.map(addOrderbook)
+      }
     } else {
       console.error(`No preset with key ${key} found: ${orderbookPresets}`)
     }

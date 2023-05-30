@@ -77,7 +77,7 @@ const emitConfig = () =>
 
 watch(exchangeId, () => (symbol.value = listAvailableMarkets()[0]))
 watch([clickedOrder], openOrderFormFromOrderbookClick)
-watch([exchangeId, symbol, tickSize], () => (round.value = tickSize.value), { immediate: true })
+watch([exchangeId, symbol, tickSize], () => (round.value = round.value ?? tickSize.value), { immediate: true })
 watch([exchangeId, symbol, interval, limit, round], emitConfig, { immediate: true })
 
 const labelStyle: CSSProperties = computed(() => ({

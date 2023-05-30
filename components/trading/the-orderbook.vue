@@ -21,6 +21,7 @@ const props = withDefaults(defineProps<OrderbookProps>(), {
   clicked: null,
 })
 
+console.log(props)
 const { orderbook, pending } = useOrderbookWebsocket(
   computed(() => props.exchangeId),
   computed(() => props.symbol),
