@@ -2,6 +2,7 @@ import useAvailableExchanges from '~/composables/useAvailableExchanges'
 import useAvailableSymbols from '~/composables/useAvailableSymbols'
 import { computed, Ref, ref, watch } from 'vue'
 import useCcxtClient from '~/components/trading/useCcxtClient'
+import { normalizeOrderType } from '~/utils/ccxt/functions'
 
 const useOrderForm = (initialParams: {
   exchangeId?: string
@@ -16,8 +17,8 @@ const useOrderForm = (initialParams: {
 }) => {
   const exchangeId = ref(initialParams.exchangeId || null)
   const symbol = ref(initialParams.symbol || null)
-  const side = ref(initialParams.side || null)
-  const type = ref(initialParams.type || null)
+  const side = ref(initialParams.side?.toUpperCase() || null)
+  const type = ref(normalizeOrderType(initialParams.type || null))
   const size = ref(initialParams.size || null)
   const price = ref(initialParams.price || null)
   const triggerPrice = ref(initialParams.triggerPrice || null)
