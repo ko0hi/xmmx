@@ -212,9 +212,9 @@ class CcxtClient {
     return socket
   }
 
-  getOrderbookFromSocket = (symbol: string): OrderBook => this.orderbookCache[symbol]
+  getOrderbook = (symbol: string): OrderBook => this.orderbookCache[symbol]
 
-  getOrderStateFromSocket = (): OrderState => this.orderState
+  getOrderState = (): OrderState => this.orderState
 
   getOrdersHistoryFromSocket = (): Order[] => this.orderHistory
 
