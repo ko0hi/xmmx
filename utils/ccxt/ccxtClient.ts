@@ -73,7 +73,7 @@ class CcxtClient {
     return await $fetch(`${this.baseUrl}/v1/orders`, {
       method: 'GET',
       params: {
-        exchangeId: this.exchange.id,
+        exchangeId: this.exchangeId,
         symbol: params?.symbol,
       },
     })
@@ -87,7 +87,7 @@ class CcxtClient {
     return await $fetch(`${this.baseUrl}/v1/orders`, {
       method: 'GET',
       params: {
-        exchangeId: this.exchange.id,
+        exchangeId: this.exchangeId,
       },
     })
   }
@@ -219,6 +219,10 @@ class CcxtClient {
   getOrdersHistoryFromSocket = (): Order[] => this.orderHistory
 
   initializeOrders = async () => (await this.fetchOrders()).forEach(o => (this.orderState[o.id] = o))
+
+  extractStopPriceFromOrder = (order: Order): number => {
+    throw new NotImplementedError()
+  }
 }
 
 export default CcxtClient

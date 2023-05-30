@@ -146,6 +146,10 @@ class Binanceusdm extends CcxtClient {
     })
     return mapBinanceOrderResponseToCcxtOrder({ ...resp, ...{ time: new Date().getTime().toString() } })
   }
+
+  extractStopPriceFromOrder = (order: Order): number => {
+    return parseFloat(order.info.stopPrice)
+  }
 }
 
 export default Binanceusdm

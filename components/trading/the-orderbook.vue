@@ -2,6 +2,8 @@
 import { computed, Ref } from 'vue'
 import useOrderbookWebsocket from '~/components/trading/useOrderbookWebsocket'
 import usePrecisionFormatter from '~/components/trading/usePrecisionFormatter'
+import useOrderState from '~/components/trading/useOrderState'
+import useCcxtClient from '~/components/trading/useCcxtClient'
 
 type OrderbookProps = {
   exchangeId: string
@@ -29,6 +31,8 @@ const { orderbook, pending } = useOrderbookWebsocket(
   }
 )
 const { formatPrice, formatSize } = usePrecisionFormatter(computed(() => props.exchangeId))
+const { openOrders } = useOrderState(computed(() => props.exchangeId))
+const { client } = useCcxtClient(computed(() => props.exchangeId))
 
 const onClick = (item: Item) => {
   emit('update:clicked', {
@@ -38,7 +42,32 @@ const onClick = (item: Item) => {
   })
 }
 
+const getOpenOrderAtThisPrice = (symbol: string, price: string) => {
+  for (const order of openOrders.value.filter(o => o.symbol === symbol)) {
+    const refPrice = order.type === 'limit' ? order.price : client.value.extractStopPriceFromOrder(order)
+    const orderPrice = formatPrice(props.symbol, Math.round(refPrice / props.round) * props.round)
+    if (orderPrice === price) {
+      return order
+    }
+  }
+  return null
+}
+
 const sideToSpanClass = (side: 'ask' | 'bid') => (side === 'ask' ? 'text-red-500' : 'text-green-500')
+
+const itemToSpanClass = (item: Item): string => {
+  const classes = []
+  classes.push(sideToSpanClass(item.side))
+  const order = getOpenOrderAtThisPrice(props.symbol, item.price)
+  if (order) {
+    if (order.type == 'limit') {
+      classes.push(order.side === 'buy' ? 'bg-green-100' : 'bg-red-100')
+    } else if (order.type == 'stop' || order.type == 'stop_market') {
+      classes.push('bg-yellow-100')
+    }
+  }
+  return classes.join(' ')
+}
 
 const toIthRowItem = (i: number, side: 'ask' | 'bid'): Item => {
   const target = side === 'ask' ? orderbook.value.asks[i] : orderbook.value.bids[i]
@@ -84,8 +113,12 @@ const emit = defineEmits<{
         class="grid grid-cols-2 hover hover:bg-gray-100 cursor-pointer"
         @click="onClick(item)"
       >
-        <span :class="sideToSpanClass(item.side)">{{ item.side === 'bid' ? item.sizeDisplay : item.price }}</span>
-        <span :class="sideToSpanClass(item.side)">{{ item.side == 'bid' ? item.price : item.sizeDisplay }}</span>
+        <span :class="sideToSpanClass(item.side) + ' ' + itemToSpanClass(item)">{{
+          item.side === 'bid' ? item.sizeDisplay : item.price
+        }}</span>
+        <span :class="sideToSpanClass(item.side) + ' ' + itemToSpanClass(item)">{{
+          item.side == 'bid' ? item.price : item.sizeDisplay
+        }}</span>
       </div>
       <slot name="afterOrderbook" />
     </div>
