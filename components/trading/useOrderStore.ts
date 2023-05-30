@@ -25,6 +25,11 @@ const useOrderStore = (exchangeId: string | Ref<string>) => {
 
     return {
       orderState: readonly(orderState),
+      reload: async () =>
+        await client.value.initializeOrders().then(
+          () => triggerRef(orderState),
+          error => console.error(error)
+        ),
     }
   })()
 }
