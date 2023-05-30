@@ -1,4 +1,4 @@
-import { Ref, ref } from 'vue'
+import { reactive, Ref, ref } from 'vue'
 import useOrderbookPresetsStore, { OrderbookConfig } from '~/components/preferences/useOrderbookPresetsStore'
 import FormedOrderbook from '~/components/trading/formed-orderbook.vue'
 import { v4 as uuid4 } from 'uuid'
@@ -8,8 +8,7 @@ const useOrderbookList = () => {
     {
       component: typeof FormedOrderbook
       key: string
-      initialConfig: OrderbookConfig
-      configRef: Ref<OrderbookConfig>
+      config: Ref<OrderbookConfig>
     }[]
   >([])
 
@@ -19,8 +18,7 @@ const useOrderbookList = () => {
     orderbookList.value.push({
       component: FormedOrderbook,
       key: uuid4(),
-      initialConfig: config,
-      configRef: ref(config),
+      config: reactive(config),
     })
   }
 
@@ -35,14 +33,14 @@ const useOrderbookList = () => {
   const reloadAllOrderbooks = () => {
     const tmp = orderbookList.value
     resetOrderbookList()
-    tmp.map(item => addOrderbook(item.configRef))
+    tmp.map(item => addOrderbook(item.config))
   }
 
   const saveCurrentList = (name?: string) => {
     const { setPreset } = useOrderbookPresetsStore()
     setPreset(
       typeof name == 'string' ? name : uuid4(),
-      orderbookList.value.map(item => item.configRef)
+      orderbookList.value.map(item => item.config)
     )
   }
 

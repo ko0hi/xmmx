@@ -53,12 +53,7 @@ onMounted(() => addOrderbook())
               @click="deleteOrderbook(orderbook.key)"
             />
           </div>
-          <component
-            :is="orderbook.component"
-            v-model:config="orderbook.configRef"
-            class="-mt-1"
-            :initial-config="orderbook.initialConfig"
-          />
+          <component :is="orderbook.component" v-model:config="orderbook.config" class="-mt-1" />
         </div>
         <div class="flex m-5 items-center justify-center">
           <n-button

@@ -12,22 +12,21 @@ type Config = {
   round?: number
 }
 
-const props = withDefaults(defineProps<{ initialConfig: Config; config?: Ref<Config> }>(), {
-  initialConfig: () => ({
+const props = withDefaults(defineProps<{ config?: Config }>(), {
+  config: () => ({
     exchangeId: 'binanceusdm',
     symbol: 'BTC/USDT:USDT',
     interval: 1000,
     limit: 5,
     round: null,
   }),
-  config: ref(),
 })
 
-const exchangeId = ref(props.initialConfig.exchangeId ?? null)
-const symbol = ref(props.initialConfig.symbol ?? null)
-const interval = ref(props.initialConfig.interval ?? 1000)
-const limit = ref(props.initialConfig.limit ?? 5)
-const round = ref(props.initialConfig.round ?? null)
+const exchangeId = ref(props.config.exchangeId ?? null)
+const symbol = ref(props.config.symbol ?? null)
+const interval = ref(props.config.interval ?? 1000)
+const limit = ref(props.config.limit ?? 5)
+const round = ref(props.config.round ?? null)
 const clickedOrder = ref()
 
 const { listAvailableMarkets, getTickSize } = useCcxtClient(exchangeId)
