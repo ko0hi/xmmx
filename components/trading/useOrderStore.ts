@@ -1,25 +1,26 @@
 import { defineStore } from 'pinia'
-import { computed, onMounted, readonly, Ref, triggerRef } from 'vue'
+import { computed, onMounted, readonly, Ref, triggerRef, unref } from 'vue'
 import useCcxtClient from '~/components/trading/useCcxtClient'
 import { useMessage } from 'naive-ui'
 
 const useOrderStore = (exchangeId: string | Ref<string>) => {
+  console.log(`Factory order store for ${unref(exchangeId)}`)
   return defineStore(`${exchangeId}OrderStore`, () => {
+    console.log(`Define order store for ${unref(exchangeId)}`)
     const { client } = useCcxtClient(exchangeId)
     const orderState = computed(() => client.value.getOrderStateFromSocket())
     const msg = useMessage()
     onMounted(async () => {
-      console.log(`OnMounted useOrderStore: ${exchangeId}`)
-      await client.value.initializeOrders().catch(error => {
-        // FIXME
-        msg.warning(`${error.statusCode}: Failed to initialize your orders`)
-        // dialog.error({
-        //   title: `${error.statusCode}: Failed to initialize your orders`,
-        //   content: error.data,
-        // })
-      })
-      await client.value.watchOrders(() => triggerRef(orderState))
-      triggerRef(orderState)
+      await client.value.initializeOrders().then(
+        async () => {
+          await client.value.watchOrders(() => triggerRef(orderState))
+          triggerRef(orderState)
+          console.log(`Initialized order store for ${unref(exchangeId)}`)
+        },
+        error => {
+          msg.warning(`Failed to initialize order store for ${unref(exchangeId)} (${error.statusCode}: )`)
+        }
+      )
     })
 
     return {
