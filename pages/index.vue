@@ -1,17 +1,20 @@
 <template>
-  <n-config-provider preflight-style-disabled>
-    <n-message-provider>
-      <n-dialog-provider>
-        <div class="flex flex-col m-5 p-5">
-          <trading-formed-orderbook-list class="mb-5" />
-          <trading-order-list exchange-id="binanceusdm" />
-        </div>
-      </n-dialog-provider>
-    </n-message-provider>
-  </n-config-provider>
+  <div class="flex flex-col m-5 p-5">
+    <trading-formed-orderbook-list class="mb-5" />
+    <trading-order-list exchange-id="binanceusdm" />
+  </div>
 </template>
 
-<script lang="ts" setup></script>
+<script lang="ts" setup>
+import useDiscordWebhook from '~/composables/useDiscordWebhook'
+import { onMounted } from 'vue'
+
+const { post } = useDiscordWebhook()
+
+onMounted(async () => {
+  await post('Hello world')
+})
+</script>
 
 <style>
 * {
