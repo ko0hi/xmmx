@@ -1,21 +1,15 @@
-<template>
-  <div class="flex flex-col m-5 p-5">
-    <trading-formed-orderbook-list class="mb-5" />
-    <trading-order-list exchange-id="binanceusdm" />
-  </div>
-</template>
-
 <script lang="ts" setup>
-import useDiscordWebhook from '~/composables/useDiscordWebhook'
-import { onMounted } from 'vue'
+import { ref } from 'vue'
 
-const { post } = useDiscordWebhook()
-
-onMounted(async () => {
-  await post('Hello world')
-})
+const a = ref()
 </script>
 
+<template>
+  <div class="flex flex-col m-5 p-5">
+    <trading-formed-orderbook-list class="mb-5" ref="a" />
+    <trading-order-list exchange-id="binanceusdm" v-if="a" />
+  </div>
+</template>
 <style>
 * {
   margin: 0px;

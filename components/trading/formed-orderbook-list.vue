@@ -14,7 +14,7 @@ const {
 } = useOrderbookList()
 
 onMounted(() => {
-  ;[
+  [
     { exchangeId: 'binanceusdm', symbol: 'BTC/USDT:USDT' },
     { exchangeId: 'binancecoinm', symbol: 'BTC/USD:BTC' },
     { exchangeId: 'binancecoinm', symbol: 'BTC/USD:BTC-230630' },

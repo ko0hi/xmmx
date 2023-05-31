@@ -1,4 +1,4 @@
-import { defineStore } from 'pinia'
+import { defineStore, Store } from 'pinia'
 import { computed, onMounted, readonly, Ref, triggerRef, unref } from 'vue'
 import useCcxtClient from '~/components/trading/useCcxtClient'
 import { useMessage } from 'naive-ui'
@@ -7,9 +7,18 @@ import useDiscordWebhook from '~/composables/useDiscordWebhook'
 // TODO: This is a hack to get the speech synthesis to work
 window.speechSynthesis.getVoices()
 
+// 同じ取引所に複数のストアが作成される場合があるので自前でキャッシュする
+const storeCache = new Map<string, Store>()
+
 const useOrderStore = (exchangeId: string | Ref<string>) => {
   console.log(`Factory order store for ${unref(exchangeId)}`)
-  return defineStore(`${exchangeId}OrderStore`, () => {
+
+  if (storeCache.has(unref(exchangeId))) {
+    console.log(`Reuse order store for ${unref(exchangeId)}`)
+    return storeCache.get(unref(exchangeId))
+  }
+
+  const store = defineStore(`${exchangeId}OrderStore`, () => {
     console.log(`Define order store for ${unref(exchangeId)}`)
     const { client } = useCcxtClient(exchangeId)
     const orderState = computed(() => client.value.getOrderState())
@@ -37,7 +46,7 @@ const useOrderStore = (exchangeId: string | Ref<string>) => {
       // TODO: This is a hack to get the speech synthesis to work
       setInterval(async () => {
         Object.values(orderState.value)
-          .filter(o => o.status === 'closed')
+          .filter(o => o.status === 'canceled')
           .filter(o => !reported.has(o.id))
           .forEach(o => {
             if (!reported.has(o.id)) {
@@ -72,6 +81,10 @@ const useOrderStore = (exchangeId: string | Ref<string>) => {
         ),
     }
   })()
+
+  storeCache.set(unref(exchangeId), store)
+
+  return store
 }
 
 export default useOrderStore
