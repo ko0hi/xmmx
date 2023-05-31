@@ -93,3 +93,6 @@ Then, restart the containers.
 ```bash
 sh ./start.sh
 ```
+
+## Notes
+- Chrome is recommended.
