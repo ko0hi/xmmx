@@ -1,6 +1,5 @@
 import useCcxtClient from '~/components/trading/useCcxtClient'
-import { computed, onMounted, Ref, triggerRef } from 'vue'
-import { useDialog } from 'naive-ui'
+import { computed, Ref } from 'vue'
 import useOrderStore from '~/components/trading/useOrderStore'
 import { storeToRefs } from 'pinia'
 
