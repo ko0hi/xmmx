@@ -46,7 +46,7 @@ const useOrderStore = (exchangeId: string | Ref<string>) => {
       // TODO: This is a hack to get the speech synthesis to work
       setInterval(async () => {
         Object.values(orderState.value)
-          .filter(o => o.status === 'canceled')
+          .filter(o => o.status === 'closed')
           .filter(o => !reported.has(o.id))
           .forEach(o => {
             if (!reported.has(o.id)) {
