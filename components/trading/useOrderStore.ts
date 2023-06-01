@@ -51,16 +51,18 @@ const useOrderStore = (exchangeId: string | Ref<string>) => {
           .forEach(o => {
             if (!reported.has(o.id)) {
               console.log('Execution', o)
+              const price = o.average
               const side = o.side === 'buy' ? 'long' : 'short'
               const symbol = o.symbol.split(':')[0].replace('/', '')
               const uttr = new SpeechSynthesisUtterance()
               uttr.lang = 'en-US'
+              uttr.rate = 1.25
               const voices = window.speechSynthesis.getVoices()
               uttr.voice =
                 voices.find(voice => voice.name === 'Google US English') ||
                 voices.find(voice => voice.name === 'Samantha') ||
                 null
-              uttr.text = `${side.toLocaleUpperCase()}: ${symbol} at ${o.price} with a lot of ${o.amount}`
+              uttr.text = `${side.toLocaleUpperCase()}: ${symbol} at ${price} with a lot of ${o.amount}`
 
               msg.success(uttr.text, { duration: 5000 })
               window.speechSynthesis.speak(uttr)
