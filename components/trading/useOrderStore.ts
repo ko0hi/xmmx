@@ -56,7 +56,7 @@ const useOrderStore = (exchangeId: string | Ref<string>) => {
               const symbol = o.symbol.split(':')[0].replace('/', '')
               const uttr = new SpeechSynthesisUtterance()
               uttr.lang = 'en-US'
-              uttr.rate = 1.25
+              uttr.rate = 1.1
               const voices = window.speechSynthesis.getVoices()
               uttr.voice =
                 voices.find(voice => voice.name === 'Google US English') ||
