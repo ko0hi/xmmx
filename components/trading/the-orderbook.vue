@@ -33,14 +33,16 @@ const { orderbook, pending } = useOrderbookWebsocket(
 )
 const { formatPrice, formatSize } = usePrecisionFormatter(computed(() => props.exchangeId))
 const { openOrders } = useOrderState(computed(() => props.exchangeId))
-const { client } = useCcxtClient(computed(() => props.exchangeId))
+const { client, isPrivateApiAvailable } = useCcxtClient(computed(() => props.exchangeId))
 
 const onClick = (item: Item) => {
-  emit('update:clicked', {
-    exchangeId: props.exchangeId,
-    symbol: props.symbol,
-    ...item,
-  })
+  if (isPrivateApiAvailable.value) {
+    emit('update:clicked', {
+      exchangeId: props.exchangeId,
+      symbol: props.symbol,
+      ...item,
+    })
+  }
 }
 
 const getOpenOrderAtThisPrice = (symbol: string, price: string) => {

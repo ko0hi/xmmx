@@ -45,6 +45,11 @@ class CcxtClient {
     this.orderbookCache = {}
   }
 
+  isPrivateApiAvailable = async (): Promise<boolean> => {
+    const hasKeyExchanges = await $fetch<string[]>(`${this.ccxtServerUrl}/api/v1/hasKeyExchanges`, {})
+    return hasKeyExchanges.includes(this.exchangeId)
+  }
+
   fetchMarkets = async (): Promise<Market[]> => {
     return await $fetch(`${this.baseUrl}/v1/markets`)
   }
