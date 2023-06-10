@@ -3,6 +3,7 @@ import { computed, CSSProperties, h, onMounted, Ref, ref, watch } from 'vue'
 import useCcxtClient from '~/components/trading/useCcxtClient'
 import useCurrencyIcon from '~/composables/useCurrencyIcon'
 import useOrderFormDialog from '~/components/trading/useOrderFormDialog'
+import { exchangeList } from '~/utils/ccxt/functions'
 
 type Config = {
   exchangeId?: string
@@ -98,14 +99,7 @@ const labelStyle: CSSProperties = computed(() => ({
       label-align="right"
     >
       <n-form-item class="my-2" label="Exchange" :label-style="labelStyle">
-        <n-select
-          v-model:value="exchangeId"
-          :options="[
-            { label: 'binanceusdm', value: 'binanceusdm' },
-            { label: 'binancecoinm', value: 'binancecoinm' },
-          ]"
-          filterable
-        />
+        <n-select v-model:value="exchangeId" :options="exchangeList().map(e => ({ label: e, value: e }))" filterable />
       </n-form-item>
       <n-form-item class="my-2" label="Symbol" :label-style="labelStyle">
         <n-select
@@ -169,7 +163,7 @@ const labelStyle: CSSProperties = computed(() => ({
               >BUY
             </n-button>
           </template>
-          <span>Order is not available. Maybe no api keys are provided.</span>
+          <span>No api keys or no order support for {{ exchangeId }}</span>
         </n-popover>
         <n-popover :hidden="isPrivateApiAvailable">
           <template #trigger>
@@ -183,7 +177,7 @@ const labelStyle: CSSProperties = computed(() => ({
               >SELL
             </n-button>
           </template>
-          <span>Order is not available. Maybe no api keys are provided.</span>
+          <span>No api keys or no order support for {{ exchangeId }}</span>
         </n-popover>
       </template>
     </trading-the-orderbook>

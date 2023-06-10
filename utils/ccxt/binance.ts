@@ -4,6 +4,10 @@ class Binance extends CcxtClient {
   constructor() {
     super('binance')
   }
+
+  isPrivateApiAvailable = async (): Promise<boolean> => {
+    return false
+  }
 }
 
 export default Binance

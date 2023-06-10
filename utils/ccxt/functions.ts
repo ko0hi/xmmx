@@ -12,3 +12,5 @@ export const normalizeOrderType = (type: string | null): string | null => {
       return type
   }
 }
+
+export const exchangeList = () => ['binance', 'binanceusdm', 'binancecoinm']
