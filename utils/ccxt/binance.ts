@@ -1,12 +1,13 @@
 import CcxtClient from '~/utils/ccxt/ccxtClient'
 
-class Binancecoinm extends CcxtClient {
+class Binance extends CcxtClient {
   constructor() {
-    super('binancecoinm')
+    super('binance')
   }
+
   isPrivateApiAvailable = async (): Promise<boolean> => {
     return false
   }
 }
 
-export default Binancecoinm
+export default Binance
