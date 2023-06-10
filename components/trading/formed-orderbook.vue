@@ -29,7 +29,7 @@ const limit = ref(props.config.limit ?? 5)
 const round = ref(props.config.round ?? null)
 const clickedOrder = ref()
 
-const { listAvailableMarkets, getTickSize } = useCcxtClient(exchangeId)
+const { listAvailableMarkets, getTickSize, isPrivateApiAvailable } = useCcxtClient(exchangeId)
 const { openOrderFormDialog } = useOrderFormDialog()
 
 const options = computed(() => listAvailableMarkets().map(item => ({ label: `${item}`, value: item })))
@@ -157,12 +157,34 @@ const labelStyle: CSSProperties = computed(() => ({
       :round="round"
     >
       <template #afterOrderbook>
-        <n-button class="rounded-md w-full m-3" size="tiny" type="success" @click="openOrderFormFromButtonClick('buy')"
-          >BUY
-        </n-button>
-        <n-button class="rounded-md w-full m-3" size="tiny" type="error" @click="openOrderFormFromButtonClick('sell')"
-          >SELL
-        </n-button>
+        <n-popover :hidden="isPrivateApiAvailable">
+          <template #trigger>
+            <n-button
+              class="rounded-md w-full m-3"
+              size="tiny"
+              type="success"
+              @click="openOrderFormFromButtonClick('buy')"
+              :disabled="!isPrivateApiAvailable"
+              tag="div"
+              >BUY
+            </n-button>
+          </template>
+          <span>Order is not available. Maybe no api keys are provided.</span>
+        </n-popover>
+        <n-popover :hidden="isPrivateApiAvailable">
+          <template #trigger>
+            <n-button
+              class="rounded-md w-full m-3"
+              size="tiny"
+              type="error"
+              @click="openOrderFormFromButtonClick('sell')"
+              :disabled="!isPrivateApiAvailable"
+              tag="div"
+              >SELL
+            </n-button>
+          </template>
+          <span>Order is not available. Maybe no api keys are provided.</span>
+        </n-popover>
       </template>
     </trading-the-orderbook>
   </div>
