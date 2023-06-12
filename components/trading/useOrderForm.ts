@@ -75,7 +75,29 @@ const useOrderForm = (initialParams: {
     postOnly.value = false
   }
 
-  watch(type, reset)
+  const resetByType = (newType: string | null, oldType: string | null) => {
+    const previousSize = size.value
+    if (newType === 'market' || oldType == 'market') {
+      reset()
+      size.value = previousSize
+    } else {
+      const previousPrice = price.value
+      const previousTriggerPrice = triggerPrice.value
+      if (oldType === 'limit' && newType?.startsWith('stop')) {
+        // limitからstopMarket/stopLimitに変更した場合、priceはtriggerPriceに引き継ぐ
+        reset()
+        triggerPrice.value = previousPrice
+        size.value = previousSize
+      } else if (oldType?.startsWith('stop') && newType === 'limit') {
+        // stopMarket/stopLimitからlimitに変更した場合、triggerPriceはpriceに引き継ぐ
+        reset()
+        price.value = previousTriggerPrice
+        size.value = previousSize
+      }
+    }
+  }
+
+  watch(type, (newType, oldType) => resetByType(newType, oldType))
 
   return {
     exchangeId,
