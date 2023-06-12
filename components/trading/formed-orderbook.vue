@@ -49,8 +49,6 @@ const openOrderFormFromOrderbookClick = () => {
     side: clickedOrder.value.side,
     type: 'limit',
     price: parseFloat(clickedOrder.value.price),
-    disableBuy: clickedOrder.value.side == 'ask',
-    disableSell: clickedOrder.value.side == 'bid',
   })
 }
 
