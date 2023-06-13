@@ -4,7 +4,7 @@ import useCcxtClient from '~/components/trading/useCcxtClient'
 import { storeToRefs } from 'pinia'
 
 const useOrderValidation = (exchangeId: string | Ref<string>) => {
-  const { disableOrderValidation, softAmountLimit, hardAmountLimit, softPriceLimit, hardPriceLimit } = storeToRefs(
+  const { disableOrderValidation, softAmountLimit, hardAmountLimit, softPriceLimit1, hardPriceLimit1 } = storeToRefs(
     useTradingPreferencesStore()
   )
   const { client } = useCcxtClient(exchangeId)
@@ -31,14 +31,15 @@ const useOrderValidation = (exchangeId: string | Ref<string>) => {
   const checkPriceLimit = (price: number, side: 'buy' | 'sell' | string, best: number) => {
     const diff = (side == 'buy' ? price - best : best - price) / best
     const diffString = (diff * 100).toFixed(2)
-    if (diff >= hardPriceLimit.value) {
+    console.log(diff, hardPriceLimit1.value, softPriceLimit1.value)
+    if (diff >= hardPriceLimit1.value) {
       return {
         deny: true,
         message: `Your order price exceeds the hard limit: ${diffString}% (price=${price.toLocaleString()} vs. best=${best.toLocaleString()}).`,
       }
     }
 
-    if (diff >= softPriceLimit.value) {
+    if (diff >= softPriceLimit1.value) {
       return {
         deny: false,
         message: `Your order price exceeds the soft limit: ${diffString}% (price=${price.toLocaleString()} vs. best=${best.toLocaleString()}).`,
