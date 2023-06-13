@@ -1,11 +1,14 @@
-import { useDialog } from 'naive-ui'
+import { useDialog, useMessage } from 'naive-ui'
 import { h } from 'vue'
 import OrderForm from '~/components/trading/order-form.vue'
 import OrderSummary from '~/components/trading/order-summary.vue'
 import useCcxtClient from '~/components/trading/useCcxtClient'
+import useOrderValidation from '~/components/trading/useOrderValidation'
 
 const useOrderFormDialog = () => {
   const dialog = useDialog()
+  const message = useMessage()
+
   const openOrderFormDialog = (opts: {
     exchangeId: string
     symbol: string
@@ -67,6 +70,20 @@ const useOrderFormDialog = () => {
         ),
       positiveText: 'Order',
       negativeText: 'Cancel',
+      onAfterEnter: async () => {
+        console.log(opts)
+        const { validateOrder } = useOrderValidation(opts.exchangeId)
+        const result = await validateOrder({
+          symbol: opts.symbol,
+          side: opts.side,
+          type: opts.type,
+          amount: opts.size,
+          price: opts.price,
+        })
+
+        if (result.message) message.error(result.message, { duration: 10000 })
+        if (result.deny) dialog.destroyAll()
+      },
       onPositiveClick: async () => {
         const { client } = useCcxtClient(opts.exchangeId)
         await client.value
