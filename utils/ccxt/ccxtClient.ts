@@ -18,6 +18,7 @@ import type {
   OrderBook,
   OrderParams,
   OrderState,
+  Ticker,
   Trade,
   WatchOrderbookParams,
   WatchTickerParams,
@@ -54,8 +55,13 @@ class CcxtClient {
     return await $fetch(`${this.baseUrl}/v1/markets`)
   }
 
-  fetchTicker = async (params: FetchTickerParams): Promise<any> => {
-    throw new NotImplementedError()
+  fetchTicker = async (params: FetchTickerParams): Promise<Ticker> => {
+    return await $fetch(`${this.baseUrl}/v1/tickers`, {
+      method: 'GET',
+      params: {
+        symbol: params.symbol,
+      },
+    })
   }
 
   fetchOrderbook = async (params: FetchOrderbookParams): Promise<OrderBook> => {
