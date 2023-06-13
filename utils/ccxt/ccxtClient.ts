@@ -65,7 +65,12 @@ class CcxtClient {
   }
 
   fetchOrderbook = async (params: FetchOrderbookParams): Promise<OrderBook> => {
-    throw new NotImplementedError()
+    return await $fetch(`${this.baseUrl}/v1/orderbooks`, {
+      method: 'GET',
+      params: {
+        symbol: params.symbol,
+      },
+    })
   }
 
   fetchOHLCV = async (params: FetchOHLCVParams): Promise<OHLCV[]> => {
