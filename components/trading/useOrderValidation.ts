@@ -1,5 +1,5 @@
 import { Ref } from 'vue'
-import useTradingPreferencesStore from '~/components/trading/useTradingPreferencesStore'
+import useTradingPreferencesStore from '~/components/preferences/useTradingPreferencesStore'
 import useCcxtClient from '~/components/trading/useCcxtClient'
 import { storeToRefs } from 'pinia'
 
