@@ -4,7 +4,7 @@ import { ref } from 'vue'
 const usePreferencesStore = defineStore(
   'preferencesStore',
   () => {
-    const discordWebhookUrl = ref<string>('hello')
+    const discordWebhookUrl = ref<string>('YOUR_WEBHOOK_URL')
 
     return { discordWebhookUrl }
   },
